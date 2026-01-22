@@ -12,7 +12,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -32,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen(
@@ -39,16 +39,18 @@ fun RegisterScreen(
     onRegisterSuccess: () -> Unit = {},
     onSignInClick: () -> Unit = {}
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val scope = rememberCoroutineScope()
+    val googleAuthClient = remember { com.example.lifeping.data.auth.GoogleAuthClient(context) }
+
     val fullName by viewModel.fullName.collectAsState()
     val email by viewModel.email.collectAsState()
-    val phone by viewModel.phoneNumber.collectAsState()
     val password by viewModel.password.collectAsState()
     val confirmPassword by viewModel.confirmPassword.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
     val fullNameError by viewModel.fullNameError.collectAsState()
     val emailError by viewModel.emailError.collectAsState()
-    val phoneError by viewModel.phoneError.collectAsState()
     val passwordError by viewModel.passwordError.collectAsState()
     val confirmPasswordError by viewModel.confirmPasswordError.collectAsState()
 
@@ -114,7 +116,7 @@ fun RegisterScreen(
                 Text(
                     text = "Join LifePing to stay connected with your trusted contacts",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray,
+                    color = Color.Black,
                     modifier = Modifier.padding(top = 8.dp, bottom = 24.dp),
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center
                 )
@@ -149,21 +151,7 @@ fun RegisterScreen(
                     primaryColor = primaryColor
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
 
-                // Phone
-                RegisterInput(
-                    value = phone,
-                    onValueChange = { viewModel.onPhoneNumberChange(it) },
-                    label = "Phone Number",
-                    placeholder = "+1 (555) 123-4567",
-                    icon = Icons.Default.Phone,
-                    error = phoneError,
-                    keyboardType = KeyboardType.Phone,
-                    imeAction = ImeAction.Next,
-                    backgroundColor = inputBackground,
-                    primaryColor = primaryColor
-                )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -225,6 +213,30 @@ fun RegisterScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Google Sign Up Button
+                OutlinedButton(
+                    onClick = {
+                        scope.launch {
+                            val result = googleAuthClient.signIn()
+                            viewModel.onGoogleSignInResult(result, onRegisterSuccess)
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = textColor)
+                ) {
+                    Text(
+                        text = "Sign up with Google",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 // Bottom Link
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -269,7 +281,7 @@ fun RegisterInput(
             label = { Text(label) },
             placeholder = { Text(placeholder) },
             leadingIcon = {
-                Icon(icon, contentDescription = null, tint = Color.Gray)
+                Icon(icon, contentDescription = null, tint = Color.Black)
             },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
@@ -278,19 +290,25 @@ fun RegisterInput(
                 unfocusedContainerColor = backgroundColor,
                 disabledContainerColor = backgroundColor,
                 focusedBorderColor = primaryColor,
-                unfocusedBorderColor = Color.Transparent
+                unfocusedBorderColor = Color.Transparent,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedLabelColor = Color.Black,
+                unfocusedLabelColor = Color.Black,
+                cursorColor = Color.Black
             ),
             isError = error != null,
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = keyboardType,
                 imeAction = imeAction
-            )
+            ),
+            textStyle = androidx.compose.ui.text.TextStyle(color = Color.Black)
         )
         if (error != null) {
             Text(
                 text = error,
-                color = MaterialTheme.colorScheme.error,
+                color = Color.Black,
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(start = 8.dp, top = 4.dp)
             )
@@ -316,13 +334,13 @@ fun RegisterPasswordInput(
             onValueChange = onValueChange,
             label = { Text(label) },
             leadingIcon = {
-                Icon(Icons.Default.Lock, contentDescription = null, tint = Color.Gray)
+                Icon(Icons.Default.Lock, contentDescription = null, tint = Color.Black)
             },
             trailingIcon = {
                 val image = if (visible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                 val description = if (visible) "Hide password" else "Show password"
                 IconButton(onClick = onVisibilityChange) {
-                    Icon(imageVector = image, contentDescription = description)
+                    Icon(imageVector = image, contentDescription = description, tint = Color.Black)
                 }
             },
             modifier = Modifier.fillMaxWidth(),
@@ -332,7 +350,12 @@ fun RegisterPasswordInput(
                 unfocusedContainerColor = backgroundColor,
                 disabledContainerColor = backgroundColor,
                 focusedBorderColor = primaryColor,
-                unfocusedBorderColor = Color.Transparent
+                unfocusedBorderColor = Color.Transparent,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedLabelColor = Color.Black,
+                unfocusedLabelColor = Color.Black,
+                cursorColor = Color.Black
             ),
             isError = error != null,
             visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -340,12 +363,13 @@ fun RegisterPasswordInput(
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
                 imeAction = imeAction
-            )
+            ),
+            textStyle = androidx.compose.ui.text.TextStyle(color = Color.Black)
         )
          if (error != null) {
             Text(
                 text = error,
-                color = MaterialTheme.colorScheme.error,
+                color = Color.Black,
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(start = 8.dp, top = 4.dp)
             )
