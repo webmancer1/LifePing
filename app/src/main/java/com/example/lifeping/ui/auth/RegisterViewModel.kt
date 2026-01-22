@@ -149,9 +149,23 @@ class RegisterViewModel : ViewModel() {
 
         viewModelScope.launch {
             _isLoading.value = true
-            delay(2000) // Simulate network call
-            _isLoading.value = false
-            onSuccess()
+             try {
+                com.google.firebase.auth.FirebaseAuth.getInstance().createUserWithEmailAndPassword(_email.value, _password.value)
+                    .addOnCompleteListener { task ->
+                        _isLoading.value = false
+                        if (task.isSuccessful) {
+                            // Optionally save user details (fullName, phone) to Firestore/Database here
+                            // For now, adhering to the "Authentication process" request strictly, just auth.
+                            onSuccess()
+                        } else {
+                            // Show error. Using a field error for feedback.
+                             _emailError.value = task.exception?.localizedMessage ?: "Registration failed."
+                        }
+                    }
+            } catch (e: Exception) {
+                _isLoading.value = false
+                 _emailError.value = e.localizedMessage ?: "An error occurred."
+            }
         }
     }
 }
