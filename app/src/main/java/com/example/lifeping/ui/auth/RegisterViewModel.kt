@@ -20,8 +20,7 @@ class RegisterViewModel : ViewModel() {
     private val _email = MutableStateFlow("")
     val email: StateFlow<String> = _email.asStateFlow()
 
-    private val _phoneNumber = MutableStateFlow("")
-    val phoneNumber: StateFlow<String> = _phoneNumber.asStateFlow()
+
 
     private val _password = MutableStateFlow("")
     val password: StateFlow<String> = _password.asStateFlow()
@@ -39,8 +38,7 @@ class RegisterViewModel : ViewModel() {
     private val _emailError = MutableStateFlow<String?>(null)
     val emailError: StateFlow<String?> = _emailError.asStateFlow()
 
-    private val _phoneError = MutableStateFlow<String?>(null)
-    val phoneError: StateFlow<String?> = _phoneError.asStateFlow()
+
 
     private val _passwordError = MutableStateFlow<String?>(null)
     val passwordError: StateFlow<String?> = _passwordError.asStateFlow()
@@ -49,11 +47,11 @@ class RegisterViewModel : ViewModel() {
     val confirmPasswordError: StateFlow<String?> = _confirmPasswordError.asStateFlow()
 
     val isFormValid: StateFlow<Boolean> = combine(
-        combine(_fullName, _email, _phoneNumber, _password, _confirmPassword) { name, email, phone, password, confirm ->
-            name.isNotBlank() && email.isNotBlank() && phone.isNotBlank() && password.isNotBlank() && confirm.isNotBlank()
+        combine(_fullName, _email, _password, _confirmPassword) { name, email, password, confirm ->
+            name.isNotBlank() && email.isNotBlank() && password.isNotBlank() && confirm.isNotBlank()
         },
-        combine(_fullNameError, _emailError, _phoneError, _passwordError, _confirmPasswordError) { nameError, emailError, phoneError, passwordError, confirmError ->
-            nameError == null && emailError == null && phoneError == null && passwordError == null && confirmError == null
+        combine(_fullNameError, _emailError, _passwordError, _confirmPasswordError) { nameError, emailError, passwordError, confirmError ->
+            nameError == null && emailError == null && passwordError == null && confirmError == null
         }
     ) { inputsFilled, noErrors ->
         inputsFilled && noErrors
@@ -69,10 +67,7 @@ class RegisterViewModel : ViewModel() {
         validateEmail(input)
     }
 
-    fun onPhoneNumberChange(input: String) {
-        _phoneNumber.value = input
-        validatePhone(input)
-    }
+
 
     fun onPasswordChange(input: String) {
         _password.value = input
@@ -106,15 +101,7 @@ class RegisterViewModel : ViewModel() {
         }
     }
 
-    private fun validatePhone(phone: String) {
-        if (phone.isBlank()) {
-            _phoneError.value = "Phone number is required"
-        } else if (!Patterns.PHONE.matcher(phone).matches() || phone.length < 10) {
-            _phoneError.value = "Invalid phone number format"
-        } else {
-            _phoneError.value = null
-        }
-    }
+
 
     private fun validatePassword(password: String) {
         if (password.length < 8) {
@@ -137,13 +124,11 @@ class RegisterViewModel : ViewModel() {
         // Final validation
         validateFullName(_fullName.value)
         validateEmail(_email.value)
-        validatePhone(_phoneNumber.value)
         validatePassword(_password.value)
         validateConfirmPassword(_confirmPassword.value)
 
         if (_fullNameError.value != null || _emailError.value != null || 
-            _phoneError.value != null || _passwordError.value != null || 
-            _confirmPasswordError.value != null) {
+            _passwordError.value != null || _confirmPasswordError.value != null) {
             return
         }
 
@@ -165,6 +150,16 @@ class RegisterViewModel : ViewModel() {
             } catch (e: Exception) {
                 _isLoading.value = false
                  _emailError.value = e.localizedMessage ?: "An error occurred."
+            }
+        }
+    }
+
+    fun onGoogleSignInResult(result: Result<com.google.firebase.auth.AuthResult>, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            if (result.isSuccess) {
+                onSuccess()
+            } else {
+                _emailError.value = result.exceptionOrNull()?.localizedMessage ?: "Google Sign-In failed"
             }
         }
     }
