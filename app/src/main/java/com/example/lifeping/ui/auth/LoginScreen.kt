@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
@@ -35,6 +36,10 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit = {},
     onCreateAccountClick: () -> Unit = {}
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val scope = rememberCoroutineScope()
+    val googleAuthClient = remember { com.example.lifeping.data.auth.GoogleAuthClient(context) }
+
     val email by viewModel.email.collectAsState()
     val password by viewModel.password.collectAsState()
     val rememberMe by viewModel.rememberMe.collectAsState()
@@ -45,7 +50,7 @@ fun LoginScreen(
     val primaryColor = Color(0xFF5B51F7)
     val backgroundColor = Color(0xFFE8E6F5)
     val cardColor = Color(0xFFFFFFFF)
-    val textColor = Color(0xFF333333)
+    val textColor = Color.Black
     val inputBackground = Color(0xFFF5F5F5)
 
     Box(
@@ -103,7 +108,7 @@ fun LoginScreen(
                 Text(
                     text = "Sign in to LifePing to manage your check-ins",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray,
+                    color = Color.Black,
                     modifier = Modifier.padding(top = 8.dp, bottom = 24.dp)
                 )
 
@@ -114,7 +119,7 @@ fun LoginScreen(
                     label = { Text("Email") },
                     placeholder = { Text("john@example.com") },
                     leadingIcon = {
-                        Icon(Icons.Default.Email, contentDescription = "Email Icon", tint = Color.Gray)
+                        Icon(Icons.Default.Email, contentDescription = "Email Icon", tint = Color.Black)
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
@@ -123,19 +128,25 @@ fun LoginScreen(
                         unfocusedContainerColor = inputBackground,
                         disabledContainerColor = inputBackground,
                         focusedBorderColor = primaryColor,
-                        unfocusedBorderColor = Color.Transparent
+                        unfocusedBorderColor = Color.Transparent,
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        focusedLabelColor = Color.Black,
+                        unfocusedLabelColor = Color.Black,
+                        cursorColor = Color.Black
                     ),
                     isError = emailError != null,
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Email,
                         imeAction = ImeAction.Next
-                    )
+                    ),
+                    textStyle = androidx.compose.ui.text.TextStyle(color = Color.Black)
                 )
                 if (emailError != null) {
                     Text(
                         text = emailError ?: "",
-                        color = MaterialTheme.colorScheme.error,
+                        color = Color.Black,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.align(Alignment.Start).padding(start = 8.dp, top = 4.dp)
                     )
@@ -151,7 +162,7 @@ fun LoginScreen(
                     onValueChange = { viewModel.onPasswordChange(it) },
                     label = { Text("Password") },
                     leadingIcon = {
-                        Icon(Icons.Default.Lock, contentDescription = "Lock Icon", tint = Color.Gray)
+                        Icon(Icons.Default.Lock, contentDescription = "Lock Icon", tint = Color.Black)
                     },
                     trailingIcon = {
                         val image = if (passwordVisible)
@@ -162,7 +173,7 @@ fun LoginScreen(
                         val description = if (passwordVisible) "Hide password" else "Show password"
 
                         IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(imageVector = image, contentDescription = description)
+                            Icon(imageVector = image, contentDescription = description, tint = Color.Black)
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -172,7 +183,12 @@ fun LoginScreen(
                         unfocusedContainerColor = inputBackground,
                         disabledContainerColor = inputBackground,
                         focusedBorderColor = primaryColor,
-                        unfocusedBorderColor = Color.Transparent
+                        unfocusedBorderColor = Color.Transparent,
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        focusedLabelColor = Color.Black,
+                        unfocusedLabelColor = Color.Black,
+                        cursorColor = Color.Black
                     ),
                     isError = passwordError != null,
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -180,12 +196,13 @@ fun LoginScreen(
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
-                    )
+                    ),
+                    textStyle = androidx.compose.ui.text.TextStyle(color = Color.Black)
                 )
                  if (passwordError != null) {
                     Text(
                         text = passwordError ?: "",
-                        color = MaterialTheme.colorScheme.error,
+                        color = Color.Black,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.align(Alignment.Start).padding(start = 8.dp, top = 4.dp)
                     )
@@ -248,6 +265,46 @@ fun LoginScreen(
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
+
+                // Google Sign In Button
+                OutlinedButton(
+                    onClick = {
+                        scope.launch {
+                            val result = googleAuthClient.signIn()
+                            viewModel.onGoogleSignInResult(result, onLoginSuccess)
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = textColor)
+                ) {
+                    // You might want to use a real Google logo here. For now using text/icon
+                    // If you have a google icon resource, use it. Otherwise, simple text.
+                    // Assuming no Google icon asset yet, using a placeholder icon or just text.
+                    // Ideally use R.drawable.ic_google if available or download one.
+                    // I will just use text with a generic icon for now as per constraints.
+                    // Or check if I can use a vector icon.
+                   
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                         // Placeholder for Google Icon
+                         // Icon(imageVector = Icons.Default.AccountCircle, contentDescription = null, tint = Color.Unspecified)
+                         // Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Sign in with Google",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
 
                 // Create Account
                 Row(
