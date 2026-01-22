@@ -98,4 +98,14 @@ class LoginViewModel : ViewModel() {
             }
         }
     }
+
+    fun onGoogleSignInResult(result: Result<com.google.firebase.auth.AuthResult>, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            if (result.isSuccess) {
+                onSuccess()
+            } else {
+                _passwordError.value = result.exceptionOrNull()?.localizedMessage ?: "Google Sign-In failed"
+            }
+        }
+    }
 }
