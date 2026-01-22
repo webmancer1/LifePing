@@ -77,9 +77,25 @@ class LoginViewModel : ViewModel() {
 
         viewModelScope.launch {
             _isLoading.value = true
-            delay(2000) // Simulate network call
-            _isLoading.value = false
-            onSuccess()
+            try {
+                com.google.firebase.auth.FirebaseAuth.getInstance().signInWithEmailAndPassword(_email.value, _password.value)
+                    .addOnCompleteListener { task ->
+                        _isLoading.value = false
+                        if (task.isSuccessful) {
+                            onSuccess()
+                        } else {
+                            // Show error (using password error field for generic auth error if specific one not available, or add a general error state)
+                            // For simplicity using password error or we could add a snackbar state. 
+                            // As per current UI fields, I'll set a general error on password field or just toast.
+                            // But I can't toast easily from VM without context.
+                            // I'll set _passwordError to the exception message for now to show feedback.
+                            _passwordError.value = task.exception?.localizedMessage ?: "Authentication failed."
+                        }
+                    }
+            } catch (e: Exception) {
+                _isLoading.value = false
+                _passwordError.value = e.localizedMessage ?: "An error occurred."
+            }
         }
     }
 }
