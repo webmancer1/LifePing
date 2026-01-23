@@ -26,7 +26,7 @@ LifePing addresses this gap by providing a **simple, reliable confirmation mecha
 
 ---
 
-##  Out of Scope (Intentionally Excluded)
+##  Out of Scope 
 
 - Location tracking  
 - Health or biometric data  
