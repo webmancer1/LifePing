@@ -61,16 +61,23 @@ fun HomeScreen(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet {
+            ModalDrawerSheet(
+                modifier = Modifier
+                    .fillMaxWidth(0.75f),
+                drawerShape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp),
+                drawerContainerColor = Color.White,
+            ) {
                 DrawerHeader(userName, userEmail)
-                Divider()
-                DrawerItem(Icons.Default.Home, "Home") { scope.launch { drawerState.close() } }
-                DrawerItem(Icons.Default.Person, "Profile") { /* Navigate */ }
-                DrawerItem(Icons.Default.Settings, "Settings") { /* Navigate */ }
-                DrawerItem(Icons.Default.Info, "About") { /* Navigate */ }
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+                DrawerItem(Icons.Default.Home, "Home", true) { scope.launch { drawerState.close() } }
+                DrawerItem(Icons.Default.Person, "Profile", false) { /* Navigate */ }
+                DrawerItem(Icons.Default.Settings, "Settings", false) { /* Navigate */ }
+                DrawerItem(Icons.Default.Info, "About", false) { /* Navigate */ }
                 Spacer(modifier = Modifier.weight(1f))
-                Divider()
-                DrawerItem(Icons.Default.ExitToApp, "Logout", textColor = LogoutRed) { /* Logout */ }
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                DrawerItem(Icons.Default.ExitToApp, "Logout", false, textColor = LogoutRed) { /* Logout */ }
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     ) {
@@ -131,28 +138,41 @@ fun HomeScreen(
 
 @Composable
 fun DrawerHeader(name: String, email: String) {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .background(PrimaryBlue)
+            .padding(vertical = 32.dp, horizontal = 24.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .size(64.dp)
-                .clip(CircleShape)
-                .background(PrimaryBlue),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = name.first().toString(),
+        Column {
+            Surface(
+                modifier = Modifier.size(70.dp),
+                shape = CircleShape,
                 color = Color.White,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
+                shadowElevation = 4.dp
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        text = name.first().toString().uppercase(),
+                        color = PrimaryBlue,
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = name,
+                fontWeight = FontWeight.Bold,
+                fontSize = 22.sp,
+                color = Color.White
+            )
+            Text(
+                text = email,
+                color = Color.White.copy(alpha = 0.8f),
+                fontSize = 14.sp
             )
         }
-        Spacer(modifier = Modifier.height(12.dp))
-        Text(text = name, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-        Text(text = email, color = TextSecondary, fontSize = 14.sp)
     }
 }
 
@@ -160,15 +180,36 @@ fun DrawerHeader(name: String, email: String) {
 fun DrawerItem(
     icon: ImageVector,
     label: String,
+    selected: Boolean = false,
     textColor: Color = TextPrimary,
     onClick: () -> Unit
 ) {
     NavigationDrawerItem(
-        label = { Text(text = label, color = textColor) },
-        selected = false,
+        label = {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium
+            )
+        },
+        selected = selected,
         onClick = onClick,
-        icon = { Icon(imageVector = icon, contentDescription = label, tint = textColor) },
-        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+        icon = {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = if (selected) PrimaryBlue else textColor
+            )
+        },
+        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = NavigationDrawerItemDefaults.colors(
+            selectedContainerColor = PrimaryBlue.copy(alpha = 0.1f),
+            selectedIconColor = PrimaryBlue,
+            selectedTextColor = PrimaryBlue,
+            unselectedIconColor = textColor,
+            unselectedTextColor = textColor
+        )
     )
 }
 
