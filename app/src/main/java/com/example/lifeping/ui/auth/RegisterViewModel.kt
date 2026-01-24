@@ -137,13 +137,34 @@ class RegisterViewModel : ViewModel() {
              try {
                 com.google.firebase.auth.FirebaseAuth.getInstance().createUserWithEmailAndPassword(_email.value, _password.value)
                     .addOnCompleteListener { task ->
-                        _isLoading.value = false
                         if (task.isSuccessful) {
-                            // Optionally save user details (fullName, phone) to Firestore/Database here
-                            // For now, adhering to the "Authentication process" request strictly, just auth.
-                            onSuccess()
+                            val uid = task.result?.user?.uid
+                            if (uid != null) {
+                                val userMap = hashMapOf(
+                                    "uid" to uid,
+                                    "fullName" to _fullName.value,
+                                    "email" to _email.value,
+                                    "createdAt" to com.google.firebase.Timestamp.now()
+                                )
+
+                                com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                                    .collection("users")
+                                    .document(uid)
+                                    .set(userMap)
+                                    .addOnSuccessListener {
+                                        _isLoading.value = false
+                                        onSuccess()
+                                    }
+                                    .addOnFailureListener { e ->
+                                        _isLoading.value = false
+                                        _emailError.value = "Failed to save user data: ${e.localizedMessage}"
+                                    }
+                            } else {
+                                _isLoading.value = false
+                                onSuccess() // Should not happen but fallback
+                            }
                         } else {
-                            // Show error. Using a field error for feedback.
+                             _isLoading.value = false
                              _emailError.value = task.exception?.localizedMessage ?: "Registration failed."
                         }
                     }
