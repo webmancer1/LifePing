@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.lifeping.ui.auth.LoginScreen
 import com.example.lifeping.ui.home.HomeScreen
+import com.example.lifeping.ui.profile.ProfileScreen
 import com.example.lifeping.ui.theme.LifePingTheme
 
 class MainActivity : ComponentActivity() {
@@ -50,7 +51,28 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable("home") {
-                            HomeScreen()
+                            HomeScreen(
+                                onNavigateToProfile = {
+                                    navController.navigate("profile")
+                                },
+                                onLogout = {
+                                    navController.navigate("login") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                }
+                            )
+                        }
+                        composable("profile") {
+                            ProfileScreen(
+                                onNavigateBack = {
+                                    navController.popBackStack()
+                                },
+                                onLogout = {
+                                    navController.navigate("login") {
+                                        popUpTo(0) { inclusive = true }
+                                    }
+                                }
+                            )
                         }
                     }
                 }
