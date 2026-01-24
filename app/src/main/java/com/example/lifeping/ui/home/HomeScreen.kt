@@ -45,7 +45,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     // onNavigate: (String) -> Unit, // Future navigation callback
-    viewModel: HomeViewModel = viewModel()
+    viewModel: HomeViewModel = viewModel(),
+    onNavigateToProfile: () -> Unit = {},
+    onLogout: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -71,12 +73,13 @@ fun HomeScreen(
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                 Spacer(modifier = Modifier.height(16.dp))
                 DrawerItem(Icons.Default.Home, "Home", true) { scope.launch { drawerState.close() } }
-                DrawerItem(Icons.Default.Person, "Profile", false) { /* Navigate */ }
+                DrawerItem(Icons.Default.Person, "Profile", false) { 
+                    scope.launch { drawerState.close() }
+                    onNavigateToProfile()
+                }
                 DrawerItem(Icons.Default.Settings, "Settings", false) { /* Navigate */ }
                 DrawerItem(Icons.Default.Info, "About", false) { /* Navigate */ }
                 Spacer(modifier = Modifier.weight(1f))
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-                DrawerItem(Icons.Default.ExitToApp, "Logout", false, textColor = LogoutRed) { /* Logout */ }
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
