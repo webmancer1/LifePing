@@ -75,13 +75,12 @@ class ProfileViewModel : ViewModel() {
             }
     }
 
-    fun updateProfile(fullName: String, bio: String) {
+    fun updateProfile(fullName: String) {
         val uid = auth.currentUser?.uid ?: return
         
         _isLoading.value = true
         val updates = mapOf(
-            "fullName" to fullName,
-            "bio" to bio
+            "fullName" to fullName
         )
 
         firestore.collection("users").document(uid).update(updates)
@@ -89,7 +88,7 @@ class ProfileViewModel : ViewModel() {
                 _isLoading.value = false
                 _statusMessage.value = "Profile updated successfully"
                 // Update local state
-                _userProfile.value = _userProfile.value.copy(fullName = fullName, bio = bio)
+                _userProfile.value = _userProfile.value.copy(fullName = fullName)
             }
             .addOnFailureListener { e ->
                 _isLoading.value = false
