@@ -56,14 +56,12 @@ fun ProfileScreen(
     // Editable state
     var isEditing by remember { mutableStateOf(false) }
     var editedName by remember { mutableStateOf("") }
-    var editedBio by remember { mutableStateOf("") }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     // Sync state when not editing or when profile loads
     LaunchedEffect(userProfile) {
         if (!isEditing) {
             editedName = userProfile.fullName
-            editedBio = userProfile.bio
         }
     }
 
@@ -90,7 +88,7 @@ fun ProfileScreen(
                 actions = {
                     if (isEditing) {
                         IconButton(onClick = {
-                            viewModel.updateProfile(editedName, editedBio)
+                            viewModel.updateProfile(editedName)
                             isEditing = false
                         }) {
                             Icon(Icons.Default.Check, contentDescription = "Save Profile", tint = Color.White)
@@ -245,36 +243,7 @@ fun ProfileScreen(
                     textStyle = androidx.compose.ui.text.TextStyle(color = Color.Black, fontWeight = FontWeight.Medium)
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
 
-                OutlinedTextField(
-                    value = if (isEditing) editedBio else userProfile.bio,
-                    onValueChange = { editedBio = it },
-                    label = { Text("Bio / Status", color = Color.Black) },
-                    readOnly = !isEditing,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = inputBackground,
-                        unfocusedContainerColor = inputBackground,
-                        disabledContainerColor = inputBackground,
-                        focusedBorderColor = PrimaryBlue,
-                        unfocusedBorderColor = Color.Transparent,
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black,
-                        focusedLabelColor = Color.Black,
-                        unfocusedLabelColor = Color.Black,
-                        cursorColor = Color.Black
-                    ),
-                    textStyle = androidx.compose.ui.text.TextStyle(color = Color.Black, fontWeight = FontWeight.Medium),
-                     trailingIcon = {
-                        if (!isEditing) {
-                            IconButton(onClick = { isEditing = true }) {
-                                Icon(Icons.Default.Edit, "Edit Bio", tint = PrimaryBlue)
-                            }
-                        }
-                    }
-                )
 
                 Spacer(modifier = Modifier.height(32.dp))
 
@@ -287,7 +256,6 @@ fun ProfileScreen(
                             onClick = { 
                                 isEditing = false 
                                 editedName = userProfile.fullName
-                                editedBio = userProfile.bio
                             },
                             modifier = Modifier.weight(1f)
                         ) {
@@ -296,7 +264,7 @@ fun ProfileScreen(
                         
                         Button(
                             onClick = {
-                                viewModel.updateProfile(editedName, editedBio)
+                                viewModel.updateProfile(editedName)
                                 isEditing = false
                             },
                             modifier = Modifier.weight(1f),
