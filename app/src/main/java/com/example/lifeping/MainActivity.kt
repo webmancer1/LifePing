@@ -25,7 +25,10 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "login") {
+                    val auth = com.google.firebase.auth.FirebaseAuth.getInstance()
+                    val startDestination = if (auth.currentUser != null) "home" else "login"
+                    
+                    NavHost(navController = navController, startDestination = startDestination) {
                         composable("login") {
                             LoginScreen(
                                 onLoginSuccess = {
