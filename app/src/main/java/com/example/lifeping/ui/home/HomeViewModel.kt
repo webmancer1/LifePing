@@ -10,6 +10,9 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.Duration
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+
 
 data class CheckInItem(
     val id: Int,
@@ -25,11 +28,20 @@ data class HomeStats(
 
 class HomeViewModel : ViewModel() {
 
-    private val _userName = MutableStateFlow("Alex")
+    private val auth = FirebaseAuth.getInstance()
+    private val firestore = FirebaseFirestore.getInstance()
+
+    private val _userName = MutableStateFlow("")
+
     val userName: StateFlow<String> = _userName.asStateFlow()
 
-    private val _userEmail = MutableStateFlow("alex@example.com")
+    private val _userEmail = MutableStateFlow("")
+
     val userEmail: StateFlow<String> = _userEmail.asStateFlow()
+
+    private val _userProfilePictureUrl = MutableStateFlow("")
+    val userProfilePictureUrl: StateFlow<String> = _userProfilePictureUrl.asStateFlow()
+
 
     private val _status = MutableStateFlow("All Good")
     val status: StateFlow<String> = _status.asStateFlow()
@@ -46,7 +58,9 @@ class HomeViewModel : ViewModel() {
     val checkInHistory: StateFlow<List<CheckInItem>> = _checkInHistory.asStateFlow()
 
     init {
+        loadUserProfile()
         loadMockData()
+
         startTimer()
     }
 
@@ -58,6 +72,27 @@ class HomeViewModel : ViewModel() {
             CheckInItem(4, "Yesterday, 2:20 PM")
         )
     }
+
+    private fun loadUserProfile() {
+        val uid = auth.currentUser?.uid
+        if (uid != null) {
+            // Use snapshot listener for real-time updates
+            firestore.collection("users").document(uid).addSnapshotListener { document, e ->
+                if (e != null) return@addSnapshotListener
+                
+                if (document != null && document.exists()) {
+                    _userName.value = document.getString("fullName") ?: auth.currentUser?.displayName ?: "User"
+                    _userEmail.value = document.getString("email") ?: auth.currentUser?.email ?: ""
+                    _userProfilePictureUrl.value = document.getString("profilePictureUrl") ?: auth.currentUser?.photoUrl?.toString() ?: ""
+                } else {
+                    _userName.value = auth.currentUser?.displayName ?: "User"
+                    _userEmail.value = auth.currentUser?.email ?: ""
+                    _userProfilePictureUrl.value = auth.currentUser?.photoUrl?.toString() ?: ""
+                }
+            }
+        }
+    }
+
 
     private fun startTimer() {
         viewModelScope.launch {
