@@ -38,7 +38,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
 import com.example.lifeping.ui.theme.*
+
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,6 +58,8 @@ fun HomeScreen(
 
     val userName by viewModel.userName.collectAsState()
     val userEmail by viewModel.userEmail.collectAsState()
+    val userProfilePictureUrl by viewModel.userProfilePictureUrl.collectAsState()
+
     val status by viewModel.status.collectAsState()
     val stats by viewModel.stats.collectAsState()
     val countdownText by viewModel.countdownText.collectAsState()
@@ -69,8 +74,9 @@ fun HomeScreen(
                 drawerShape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp),
                 drawerContainerColor = Color.White,
             ) {
-                DrawerHeader(userName, userEmail)
+                DrawerHeader(userName, userEmail, userProfilePictureUrl)
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+
                 Spacer(modifier = Modifier.height(16.dp))
                 DrawerItem(Icons.Default.Home, "Home", true) { scope.launch { drawerState.close() } }
                 DrawerItem(Icons.Default.Person, "Profile", false) { 
@@ -140,7 +146,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun DrawerHeader(name: String, email: String) {
+fun DrawerHeader(name: String, email: String, profilePictureUrl: String = "") {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -155,14 +161,26 @@ fun DrawerHeader(name: String, email: String) {
                 shadowElevation = 4.dp
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Text(
-                        text = name.first().toString().uppercase(),
-                        color = PrimaryBlue,
-                        fontSize = 32.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    if (profilePictureUrl.isNotEmpty()) {
+                        AsyncImage(
+                            model = profilePictureUrl,
+                            contentDescription = "Profile Picture",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                    
+                    if (profilePictureUrl.isEmpty() && name.isNotEmpty()) {
+                        Text(
+                            text = name.first().toString().uppercase(),
+                            color = PrimaryBlue,
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
+
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = name,
