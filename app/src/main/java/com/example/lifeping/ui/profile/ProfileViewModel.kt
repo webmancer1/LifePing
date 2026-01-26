@@ -10,13 +10,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-data class UserProfile(
-    val uid: String = "",
-    val fullName: String = "",
-    val email: String = "",
-    val bio: String = "",
-    val profilePictureUrl: String = ""
-)
+import com.example.lifeping.data.model.UserProfile
+
 
 class ProfileViewModel : ViewModel() {
 
