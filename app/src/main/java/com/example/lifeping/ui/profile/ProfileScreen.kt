@@ -302,7 +302,7 @@ fun ProfileScreen(
                             modifier = Modifier.weight(1f),
                             colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
                         ) {
-                            Text("Save Changes")
+                            Text("Save")
                         }
                     }
                 } else {
