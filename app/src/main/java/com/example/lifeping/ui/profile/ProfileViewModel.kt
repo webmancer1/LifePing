@@ -1,10 +1,17 @@
 package com.example.lifeping.ui.profile
 
+import android.app.Application
 import android.net.Uri
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageMetadata
+import com.google.firebase.storage.StorageException
+
+
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,10 +20,13 @@ import kotlinx.coroutines.launch
 import com.example.lifeping.data.model.UserProfile
 
 
-class ProfileViewModel : ViewModel() {
+class ProfileViewModel(application: Application) : AndroidViewModel(application) {
+
 
     private val auth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
+    private val storage = FirebaseStorage.getInstance()
+
 
     private val _userProfile = MutableStateFlow(UserProfile())
     val userProfile: StateFlow<UserProfile> = _userProfile.asStateFlow()
@@ -105,22 +115,64 @@ class ProfileViewModel : ViewModel() {
         if (uri == null) return
         val uid = auth.currentUser?.uid ?: return
         
-        // Simulating upload by just saving the string. 
-        // Note: Content URIs might not persist across restarts without permissions, 
-        // but for a demo flow it shows the mechanics.
-        val updates = mapOf(
-            "profilePictureUrl" to uri.toString()
-        )
+        _isLoading.value = true
         
-        firestore.collection("users").document(uid).update(updates)
-            .addOnSuccessListener {
-                _userProfile.value = _userProfile.value.copy(profilePictureUrl = uri.toString())
-                _statusMessage.value = "Profile picture updated"
+        viewModelScope.launch {
+            try {
+                val context = getApplication<Application>()
+                val inputStream = context.contentResolver.openInputStream(uri)
+                val data = inputStream?.readBytes()
+                inputStream?.close()
+                
+                if (data != null) {
+                    val storageRef = storage.reference.child("profile_images/${uid}.jpg")
+                    
+                    val metadata = StorageMetadata.Builder()
+                        .setContentType("image/jpeg")
+                        .build()
+                    
+                    storageRef.putBytes(data, metadata)
+                        .addOnSuccessListener {
+                            storageRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                                val downloadUrl = downloadUri.toString()
+                                 val updates = mapOf(
+                                    "profilePictureUrl" to downloadUrl
+                                )
+                                
+                                firestore.collection("users").document(uid).update(updates)
+                                    .addOnSuccessListener {
+                                        _isLoading.value = false
+                                        _userProfile.value = _userProfile.value.copy(profilePictureUrl = downloadUrl)
+                                        _statusMessage.value = "Profile picture updated"
+                                    }
+                                    .addOnFailureListener { e ->
+                                        _isLoading.value = false
+                                        _statusMessage.value = "Failed to update profile link: ${e.localizedMessage}"
+                                    }
+                            }.addOnFailureListener { e ->
+                                _isLoading.value = false
+                                _statusMessage.value = "Failed to get download URL: ${e.localizedMessage}"
+                            }
+                        }
+                        .addOnFailureListener { e ->
+                            _isLoading.value = false
+                            val errorCode = (e as? StorageException)?.errorCode ?: -1
+                            val bucket = storage.app.options.storageBucket
+                            _statusMessage.value = "Upload Failed (Err: $errorCode, Bucket: $bucket): ${e.localizedMessage}"
+                        }
+                } else {
+                    _isLoading.value = false
+                    _statusMessage.value = "Failed to read image file"
+                }
+
+            } catch (e: Exception) {
+                _isLoading.value = false
+                _statusMessage.value = "Error preparing image: ${e.localizedMessage}"
             }
-             .addOnFailureListener { e ->
-                _statusMessage.value = "Failed to update picture: ${e.localizedMessage}"
-            }
+        }
     }
+
+
 
     fun clearStatusMessage() {
         _statusMessage.value = null

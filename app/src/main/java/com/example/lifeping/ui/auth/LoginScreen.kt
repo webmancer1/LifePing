@@ -39,6 +39,7 @@ fun LoginScreen(
     val context = androidx.compose.ui.platform.LocalContext.current
     val scope = rememberCoroutineScope()
     val googleAuthClient = remember { com.example.lifeping.data.auth.GoogleAuthClient(context) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val email by viewModel.email.collectAsState()
     val password by viewModel.password.collectAsState()
@@ -46,6 +47,14 @@ fun LoginScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val emailError by viewModel.emailError.collectAsState()
     val passwordError by viewModel.passwordError.collectAsState()
+    val message by viewModel.message.collectAsState()
+
+    LaunchedEffect(message) {
+        message?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearMessage()
+        }
+    }
 
     val primaryColor = Color(0xFF5B51F7)
     val backgroundColor = Color(0xFFE8E6F5)
@@ -234,7 +243,7 @@ fun LoginScreen(
                         style = MaterialTheme.typography.bodySmall,
                         color = primaryColor,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.clickable { /* Handle forgot password */ }
+                        modifier = Modifier.clickable { viewModel.forgotPassword() }
                     )
                 }
 
@@ -327,6 +336,10 @@ fun LoginScreen(
                 }
             }
         }
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 
