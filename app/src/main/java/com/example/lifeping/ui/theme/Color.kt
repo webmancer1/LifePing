@@ -18,3 +18,8 @@ val WarningOrange = Color(0xFFFF9800)
 val TextPrimary = Color(0xFF333333)
 val TextSecondary = Color(0xFF666666)
 val LogoutRed = Color(0xFFD32F2F)
+
+val BackgroundDark = Color(0xFF121212)
+val SurfaceDark = Color(0xFF1E1E1E)
+val TextPrimaryDark = Color(0xFFE0E0E0)
+val TextSecondaryDark = Color(0xFFB0B0B0)
