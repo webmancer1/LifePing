@@ -10,6 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.foundation.isSystemInDarkTheme
 import com.example.lifeping.ui.auth.LoginScreen
 import com.example.lifeping.ui.home.HomeScreen
 import com.example.lifeping.ui.profile.ProfileScreen
@@ -19,7 +22,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            LifePingTheme {
+            val themeViewModel: com.example.lifeping.ui.theme.ThemeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+            val isDarkTheme by themeViewModel.isDarkTheme.collectAsState()
+            
+            android.util.Log.d("ThemeDebug", "MainActivity: Recomposing with isDarkTheme = $isDarkTheme")
+
+            LifePingTheme(darkTheme = isDarkTheme, dynamicColor = false) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -62,7 +70,9 @@ class MainActivity : ComponentActivity() {
                                     navController.navigate("login") {
                                         popUpTo("home") { inclusive = true }
                                     }
-                                }
+                                },
+                                isDarkTheme = isDarkTheme,
+                                onThemeToggle = { themeViewModel.toggleTheme() }
                             )
                         }
                         composable("profile") {
