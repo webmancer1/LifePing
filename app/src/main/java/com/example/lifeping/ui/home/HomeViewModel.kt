@@ -6,6 +6,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -18,6 +21,12 @@ data class CheckInItem(
     val id: Int,
     val time: String,
     val status: String = "Completed"
+)
+
+// Wrapper to make List stable
+@androidx.compose.runtime.Immutable
+data class CheckInHistoryWrapper(
+    val items: List<CheckInItem>
 )
 
 data class HomeStats(
@@ -55,7 +64,14 @@ class HomeViewModel : ViewModel() {
     val countdownText: StateFlow<String> = _countdownText.asStateFlow()
 
     private val _checkInHistory = MutableStateFlow<List<CheckInItem>>(emptyList())
-    val checkInHistory: StateFlow<List<CheckInItem>> = _checkInHistory.asStateFlow()
+    // Expose wrapper
+    val checkInHistory: StateFlow<CheckInHistoryWrapper> = _checkInHistory
+        .map { CheckInHistoryWrapper(it) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = CheckInHistoryWrapper(emptyList())
+        )
 
     init {
         loadUserProfile()
