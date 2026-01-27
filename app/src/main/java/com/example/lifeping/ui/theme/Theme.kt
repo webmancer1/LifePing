@@ -10,17 +10,28 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
+    primary = PrimaryBlue,
     secondary = PurpleGrey80,
-    tertiary = Pink80
+    tertiary = Pink80,
+    background = BackgroundDark,
+    surface = SurfaceDark,
+    onBackground = TextPrimaryDark,
+    onSurface = TextPrimaryDark,
+    onPrimary = Color.White
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
+    primary = PrimaryBlue,
     secondary = PurpleGrey40,
-    tertiary = Pink40
+    tertiary = Pink40,
+    background = BackgroundGray,
+    surface = Color.White,
+    onBackground = TextPrimary,
+    onSurface = TextPrimary,
+    onPrimary = Color.White
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -46,13 +57,23 @@ fun LifePingTheme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> {
+            android.util.Log.d("ThemeDebug", "LifePingTheme: Using DarkColorScheme")
+            DarkColorScheme
+        }
+        else -> {
+            android.util.Log.d("ThemeDebug", "LifePingTheme: Using LightColorScheme")
+            LightColorScheme
+        }
     }
 
+    val startTime = System.currentTimeMillis()
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
+        content = {
+            content()
+            android.util.Log.d("ThemeDebug", "LifePingTheme: Content composed in ${System.currentTimeMillis() - startTime}ms")
+        }
     )
 }
