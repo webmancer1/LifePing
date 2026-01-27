@@ -21,6 +21,8 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
@@ -40,6 +42,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.layout.PaddingValues
 import com.example.lifeping.ui.theme.*
 
 import kotlinx.coroutines.launch
@@ -50,11 +54,12 @@ fun HomeScreen(
     // onNavigate: (String) -> Unit, // Future navigation callback
     viewModel: HomeViewModel = viewModel(),
     onNavigateToProfile: () -> Unit = {},
-    onLogout: () -> Unit = {}
+    onLogout: () -> Unit = {},
+    isDarkTheme: Boolean = false,
+    onThemeToggle: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val scrollState = rememberScrollState()
 
     val userName by viewModel.userName.collectAsState()
     val userEmail by viewModel.userEmail.collectAsState()
@@ -63,7 +68,10 @@ fun HomeScreen(
     val status by viewModel.status.collectAsState()
     val stats by viewModel.stats.collectAsState()
     val countdownText by viewModel.countdownText.collectAsState()
-    val history by viewModel.checkInHistory.collectAsState()
+    val historyWrapper by viewModel.checkInHistory.collectAsState()
+    
+    // Stable lambdas
+    val onCheckInNow = remember(viewModel) { { viewModel.onCheckInNow() } }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -72,7 +80,7 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth(0.75f),
                 drawerShape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp),
-                drawerContainerColor = Color.White,
+                drawerContainerColor = MaterialTheme.colorScheme.surface,
             ) {
                 DrawerHeader(userName, userEmail, userProfilePictureUrl)
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
@@ -100,7 +108,7 @@ fun HomeScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = "LifePing",
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 fontWeight = FontWeight.Bold
                             )
                         }
@@ -114,34 +122,68 @@ fun HomeScreen(
                             )
                         }
                     },
+                    actions = {
+                        IconButton(onClick = {
+                            android.util.Log.d("ThemeDebug", "HomeScreen: Theme toggled clicked")
+                            onThemeToggle()
+                        }) {
+                            Icon(
+                                imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
+                                contentDescription = "Toggle Theme",
+                                tint = Color.White
+                            )
+                        }
+                    },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = PrimaryBlue
+                        containerColor = MaterialTheme.colorScheme.primary
                     )
                 )
             },
-            containerColor = BackgroundGray
+            containerColor = MaterialTheme.colorScheme.background
+
         ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(16.dp)
-                    .verticalScroll(scrollState),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                // Status Card
-                StatusCard(status)
+            HomeContent(
+                paddingValues = paddingValues,
+                status = status,
+                countdownText = countdownText,
+                onCheckInNow = onCheckInNow,
+                stats = stats,
+                history = historyWrapper
+            )
 
-                // Next Check-In Card
-                NextCheckInCard(countdownText) { viewModel.onCheckInNow() }
-
-                // Stats Grid
-                StatsGrid(stats)
-
-                // Recent Check-Ins
-                RecentCheckInsSection(history)
-            }
         }
+    }
+}
+
+@Composable
+fun HomeContent(
+    paddingValues: PaddingValues,
+    status: String,
+    countdownText: String,
+    onCheckInNow: () -> Unit,
+    stats: HomeStats,
+    history: CheckInHistoryWrapper
+) {
+    android.util.Log.d("ThemeDebug", "HomeContent: Composing")
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(vertical = 16.dp)
+    ) {
+        // Status Card
+        item { StatusCard(status) }
+
+        // Next Check-In Card
+        item { NextCheckInCard(countdownText, onCheckInNow) }
+
+        // Stats Grid
+        item { StatsGrid(stats) }
+
+        // Recent Check-Ins
+        item { RecentCheckInsSection(history.items) }
     }
 }
 
@@ -157,7 +199,7 @@ fun DrawerHeader(name: String, email: String, profilePictureUrl: String = "") {
             Surface(
                 modifier = Modifier.size(70.dp),
                 shape = CircleShape,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.surface,
                 shadowElevation = 4.dp
             ) {
                 Box(contentAlignment = Alignment.Center) {
@@ -186,11 +228,11 @@ fun DrawerHeader(name: String, email: String, profilePictureUrl: String = "") {
                 text = name,
                 fontWeight = FontWeight.Bold,
                 fontSize = 22.sp,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onPrimary
             )
             Text(
                 text = email,
-                color = Color.White.copy(alpha = 0.8f),
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
                 fontSize = 14.sp
             )
         }
@@ -239,7 +281,7 @@ fun StatusCard(status: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -290,8 +332,10 @@ fun StatusCard(status: String) {
 fun NextCheckInCard(timeRemaining: String, onCheckIn: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
+
+
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
             modifier = Modifier.padding(24.dp),
@@ -301,7 +345,7 @@ fun NextCheckInCard(timeRemaining: String, onCheckIn: () -> Unit) {
                 Icon(
                     imageVector = Icons.Default.AccessTime,
                     contentDescription = null,
-                    tint = PrimaryBlue
+                    tint = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
@@ -315,7 +359,7 @@ fun NextCheckInCard(timeRemaining: String, onCheckIn: () -> Unit) {
                 text = timeRemaining,
                 fontSize = 48.sp,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = "03:30 PM", // Keeping static as per mockup request, but could be dynamic
@@ -326,16 +370,18 @@ fun NextCheckInCard(timeRemaining: String, onCheckIn: () -> Unit) {
             // Progress bar simulation
             LinearProgressIndicator(
                 progress = 0.7f,
+
+
                 modifier = Modifier.fillMaxWidth(),
-                color = PrimaryBlue,
-                trackColor = BackgroundGray
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.background
             )
             Spacer(modifier = Modifier.height(24.dp))
             Button(
                 onClick = onCheckIn,
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
                 Text(text = "Check In Now", fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
@@ -363,6 +409,7 @@ fun StatsGrid(stats: HomeStats) {
             value = stats.streakDays.toString(),
             label = "Days Streak"
         )
+
     }
     Spacer(modifier = Modifier.height(16.dp))
     // Third card full width or managed differently? "Stats Cards (Grid Layout)" implies maybe 2 columns.
@@ -388,13 +435,13 @@ fun StatCard(
     Card(
         modifier = modifier,
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = iconColor,
+                tint = iconColor, // Keeping icon specific colors
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -402,12 +449,12 @@ fun StatCard(
                 text = value,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = label,
                 fontSize = 12.sp,
-                color = TextSecondary
+                color = TextSecondary // Keep secondary or use onSurfaceVariant
             )
         }
     }
@@ -419,7 +466,7 @@ fun RecentCheckInsSection(history: List<CheckInItem>) {
         text = "Recent Check-Ins",
         fontSize = 18.sp,
         fontWeight = FontWeight.Bold,
-        color = TextPrimary
+        color = MaterialTheme.colorScheme.onSurface
     )
     Text(
         text = "Your check-in history",
@@ -443,7 +490,7 @@ fun RecentCheckInItem(item: CheckInItem) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable { /* Handle click */ },
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(
@@ -466,7 +513,7 @@ fun RecentCheckInItem(item: CheckInItem) {
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
                     text = item.time,
-                    color = TextPrimary,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Medium
                 )
             }
