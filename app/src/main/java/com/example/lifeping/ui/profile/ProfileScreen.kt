@@ -32,6 +32,7 @@ import coil.request.ImageRequest
 import com.example.lifeping.ui.theme.BackgroundGray
 import com.example.lifeping.ui.theme.PrimaryBlue
 import androidx.compose.foundation.shape.RoundedCornerShape
+import com.example.lifeping.ui.components.LifePingAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,16 +76,13 @@ fun ProfileScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            CenterAlignedTopAppBar(
+            LifePingAppBar(
                 title = { Text("Profile", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onPrimary)
                     }
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                ),
                 actions = {
                     if (isEditing) {
                         IconButton(onClick = {
