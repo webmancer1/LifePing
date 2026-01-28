@@ -20,7 +20,8 @@ private val DarkColorScheme = darkColorScheme(
     surface = SurfaceDark,
     onBackground = TextPrimaryDark,
     onSurface = TextPrimaryDark,
-    onPrimary = Color.White
+    onPrimary = Color.White,
+    onSurfaceVariant = TextSecondaryDark
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -31,7 +32,8 @@ private val LightColorScheme = lightColorScheme(
     surface = Color.White,
     onBackground = TextPrimary,
     onSurface = TextPrimary,
-    onPrimary = Color.White
+    onPrimary = Color.White,
+    onSurfaceVariant = TextSecondary
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
