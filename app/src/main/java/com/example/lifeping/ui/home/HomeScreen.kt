@@ -244,7 +244,7 @@ fun DrawerItem(
     icon: ImageVector,
     label: String,
     selected: Boolean = false,
-    textColor: Color = TextPrimary,
+    textColor: Color = MaterialTheme.colorScheme.onSurface,
     onClick: () -> Unit
 ) {
     NavigationDrawerItem(
@@ -302,12 +302,12 @@ fun StatusCard(status: String) {
                             text = status,
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
-                            color = TextPrimary
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = "You're on track with your check-ins",
                             fontSize = 14.sp,
-                            color = TextSecondary
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -350,7 +350,7 @@ fun NextCheckInCard(timeRemaining: String, onCheckIn: () -> Unit) {
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Next Check-In",
-                    color = TextSecondary,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -363,7 +363,7 @@ fun NextCheckInCard(timeRemaining: String, onCheckIn: () -> Unit) {
             )
             Text(
                 text = "03:30 PM", // Keeping static as per mockup request, but could be dynamic
-                color = TextSecondary,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
             )
             Spacer(modifier = Modifier.height(24.dp))
@@ -454,7 +454,7 @@ fun StatCard(
             Text(
                 text = label,
                 fontSize = 12.sp,
-                color = TextSecondary // Keep secondary or use onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -471,7 +471,7 @@ fun RecentCheckInsSection(history: List<CheckInItem>) {
     Text(
         text = "Your check-in history",
         fontSize = 14.sp,
-        color = TextSecondary,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.padding(bottom = 8.dp)
     )
     
