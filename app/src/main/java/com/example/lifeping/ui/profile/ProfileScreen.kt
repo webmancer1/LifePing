@@ -76,14 +76,14 @@ fun ProfileScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Profile", fontWeight = FontWeight.Bold, color = Color.White) },
+                title = { Text("Profile", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onPrimary)
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = PrimaryBlue
+                    containerColor = MaterialTheme.colorScheme.primary
                 ),
                 actions = {
                     if (isEditing) {
@@ -91,17 +91,17 @@ fun ProfileScreen(
                             viewModel.updateProfile(editedName)
                             isEditing = false
                         }) {
-                            Icon(Icons.Default.Check, contentDescription = "Save Profile", tint = Color.White)
+                            Icon(Icons.Default.Check, contentDescription = "Save Profile", tint = MaterialTheme.colorScheme.onPrimary)
                         }
                     } else {
                         IconButton(onClick = { isEditing = true }) {
-                            Icon(Icons.Default.Edit, contentDescription = "Edit Profile", tint = Color.White)
+                            Icon(Icons.Default.Edit, contentDescription = "Edit Profile", tint = MaterialTheme.colorScheme.onPrimary)
                         }
                     }
                 }
             )
         },
-        containerColor = BackgroundGray
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Box(
             modifier = Modifier
@@ -118,7 +118,7 @@ fun ProfileScreen(
                  Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                 ) {
                     Column(
@@ -140,7 +140,7 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .size(120.dp)
                                 .clip(CircleShape)
-                                .border(2.dp, PrimaryBlue, CircleShape)
+                                .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
                                 .clickable { launcher.launch("image/*") },
                             contentScale = ContentScale.Crop
                         )
@@ -149,15 +149,15 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .size(120.dp)
                                 .clip(CircleShape)
-                                .border(2.dp, PrimaryBlue, CircleShape)
+                                .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
                                 .clickable { launcher.launch("image/*") },
-                            color = PrimaryBlue.copy(alpha = 0.1f)
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Text(
                                     text = userProfile.fullName.firstOrNull()?.toString()?.uppercase() ?: "?",
                                     style = MaterialTheme.typography.displayMedium,
-                                    color = PrimaryBlue
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
@@ -176,7 +176,7 @@ fun ProfileScreen(
                             Icon(
                                 imageVector = Icons.Default.CameraAlt,
                                 contentDescription = "Change Picture",
-                                tint = Color.White,
+                                tint = MaterialTheme.colorScheme.onPrimary,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -185,13 +185,13 @@ fun ProfileScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                val inputBackground = Color(0xFFF5F5F5)
+                val inputBackground = MaterialTheme.colorScheme.background
 
                 // Editable Fields
                 OutlinedTextField(
                     value = if (isEditing) editedName else userProfile.fullName,
                     onValueChange = { editedName = it },
-                    label = { Text("Full Name", color = Color.Black) },
+                    label = { Text("Full Name", color = MaterialTheme.colorScheme.onSurface) },
                     readOnly = !isEditing,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
@@ -199,19 +199,19 @@ fun ProfileScreen(
                         focusedContainerColor = inputBackground,
                         unfocusedContainerColor = inputBackground,
                         disabledContainerColor = inputBackground,
-                        focusedBorderColor = PrimaryBlue,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
                         unfocusedBorderColor = Color.Transparent,
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black,
-                        focusedLabelColor = Color.Black,
-                        unfocusedLabelColor = Color.Black,
-                        cursorColor = Color.Black
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        focusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                        cursorColor = MaterialTheme.colorScheme.onSurface
                     ),
-                    textStyle = androidx.compose.ui.text.TextStyle(color = Color.Black, fontWeight = FontWeight.Medium),
+                    textStyle = androidx.compose.ui.text.TextStyle(color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Medium),
                     trailingIcon = {
                         if (!isEditing) {
                             IconButton(onClick = { isEditing = true }) {
-                                Icon(Icons.Default.Edit, "Edit Name", tint = PrimaryBlue)
+                                Icon(Icons.Default.Edit, "Edit Name", tint = MaterialTheme.colorScheme.primary)
                             }
                         }
                     }
@@ -222,7 +222,7 @@ fun ProfileScreen(
                 OutlinedTextField(
                     value = userProfile.email,
                     onValueChange = { },
-                    label = { Text("Email", color = Color.Black) },
+                    label = { Text("Email", color = MaterialTheme.colorScheme.onSurface) },
                     readOnly = true,
                     enabled = false,
                     modifier = Modifier.fillMaxWidth(),
@@ -231,16 +231,16 @@ fun ProfileScreen(
                         focusedContainerColor = inputBackground,
                         unfocusedContainerColor = inputBackground,
                         disabledContainerColor = inputBackground,
-                        focusedBorderColor = PrimaryBlue,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
                         unfocusedBorderColor = Color.Transparent,
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black,
-                        focusedLabelColor = Color.Black,
-                        unfocusedLabelColor = Color.Black,
-                        disabledTextColor = Color.Black,
-                        disabledLabelColor = Color.Black
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        focusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurface
                     ),
-                    textStyle = androidx.compose.ui.text.TextStyle(color = Color.Black, fontWeight = FontWeight.Medium)
+                    textStyle = androidx.compose.ui.text.TextStyle(color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Medium)
                 )
 
 
@@ -268,7 +268,7 @@ fun ProfileScreen(
                                 isEditing = false
                             },
                             modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                         ) {
                             Text("Save")
                         }
@@ -282,16 +282,16 @@ fun ProfileScreen(
                         text = "Account Management",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.align(Alignment.Start).padding(bottom = 16.dp)
                     )
 
                      OutlinedButton(
                         onClick = { viewModel.resetPassword() },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black)
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onSurface)
                     ) {
-                        Text("Change Password", color = Color.Black, fontWeight = FontWeight.SemiBold)
+                        Text("Change Password", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold)
                     }
                     
                     Spacer(modifier = Modifier.height(8.dp))
@@ -299,9 +299,9 @@ fun ProfileScreen(
                      OutlinedButton(
                         onClick = { viewModel.logout(onLogout) },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black)
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onSurface)
                     ) {
-                        Text("Log Out", color = Color.Black, fontWeight = FontWeight.SemiBold)
+                        Text("Log Out", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold)
                     }
                     
                     Spacer(modifier = Modifier.height(8.dp))
