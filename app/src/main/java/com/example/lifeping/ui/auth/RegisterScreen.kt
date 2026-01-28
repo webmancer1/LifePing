@@ -54,22 +54,15 @@ fun RegisterScreen(
     val passwordError by viewModel.passwordError.collectAsState()
     val confirmPasswordError by viewModel.confirmPasswordError.collectAsState()
 
-    val primaryColor = Color(0xFF5B51F7)
-    val cardColor = Color(0xFFFFFFFF)
-    val textColor = Color(0xFF333333)
-    val inputBackground = Color(0xFFF5F5F5)
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val cardColor = MaterialTheme.colorScheme.surface
+    val textColor = MaterialTheme.colorScheme.onSurface
+    val inputBackground = MaterialTheme.colorScheme.background
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFFE8E6F5),
-                        Color(0xFFD1C4E9)
-                    )
-                )
-            ),
+            .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
         Card(
@@ -116,7 +109,7 @@ fun RegisterScreen(
                 Text(
                     text = "Join LifePing to stay connected with your trusted contacts",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(top = 8.dp, bottom = 24.dp),
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center
                 )
@@ -281,7 +274,7 @@ fun RegisterInput(
             label = { Text(label) },
             placeholder = { Text(placeholder) },
             leadingIcon = {
-                Icon(icon, contentDescription = null, tint = Color.Black)
+                Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface)
             },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
@@ -291,11 +284,11 @@ fun RegisterInput(
                 disabledContainerColor = backgroundColor,
                 focusedBorderColor = primaryColor,
                 unfocusedBorderColor = Color.Transparent,
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
-                focusedLabelColor = Color.Black,
-                unfocusedLabelColor = Color.Black,
-                cursorColor = Color.Black
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                focusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                cursorColor = MaterialTheme.colorScheme.onSurface
             ),
             isError = error != null,
             singleLine = true,
@@ -303,12 +296,12 @@ fun RegisterInput(
                 keyboardType = keyboardType,
                 imeAction = imeAction
             ),
-            textStyle = androidx.compose.ui.text.TextStyle(color = Color.Black)
+            textStyle = androidx.compose.ui.text.TextStyle(color = MaterialTheme.colorScheme.onSurface)
         )
         if (error != null) {
             Text(
                 text = error,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(start = 8.dp, top = 4.dp)
             )
@@ -334,13 +327,13 @@ fun RegisterPasswordInput(
             onValueChange = onValueChange,
             label = { Text(label) },
             leadingIcon = {
-                Icon(Icons.Default.Lock, contentDescription = null, tint = Color.Black)
+                Icon(Icons.Default.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface)
             },
             trailingIcon = {
                 val image = if (visible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                 val description = if (visible) "Hide password" else "Show password"
                 IconButton(onClick = onVisibilityChange) {
-                    Icon(imageVector = image, contentDescription = description, tint = Color.Black)
+                    Icon(imageVector = image, contentDescription = description, tint = MaterialTheme.colorScheme.onSurface)
                 }
             },
             modifier = Modifier.fillMaxWidth(),
@@ -351,11 +344,11 @@ fun RegisterPasswordInput(
                 disabledContainerColor = backgroundColor,
                 focusedBorderColor = primaryColor,
                 unfocusedBorderColor = Color.Transparent,
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
-                focusedLabelColor = Color.Black,
-                unfocusedLabelColor = Color.Black,
-                cursorColor = Color.Black
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                focusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                cursorColor = MaterialTheme.colorScheme.onSurface
             ),
             isError = error != null,
             visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -364,12 +357,12 @@ fun RegisterPasswordInput(
                 keyboardType = KeyboardType.Password,
                 imeAction = imeAction
             ),
-            textStyle = androidx.compose.ui.text.TextStyle(color = Color.Black)
+            textStyle = androidx.compose.ui.text.TextStyle(color = MaterialTheme.colorScheme.onSurface)
         )
          if (error != null) {
             Text(
                 text = error,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(start = 8.dp, top = 4.dp)
             )
