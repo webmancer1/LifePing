@@ -56,23 +56,15 @@ fun LoginScreen(
         }
     }
 
-    val primaryColor = Color(0xFF5B51F7)
-    val backgroundColor = Color(0xFFE8E6F5)
-    val cardColor = Color(0xFFFFFFFF)
-    val textColor = Color.Black
-    val inputBackground = Color(0xFFF5F5F5)
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val cardColor = MaterialTheme.colorScheme.surface
+    val textColor = MaterialTheme.colorScheme.onSurface
+    val inputBackground = MaterialTheme.colorScheme.background
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFFE8E6F5),
-                        Color(0xFFD1C4E9) // Slightly darker purple/blue for gradient
-                    )
-                )
-            ),
+            .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
         Card(
@@ -117,7 +109,7 @@ fun LoginScreen(
                 Text(
                     text = "Sign in to LifePing to manage your check-ins",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(top = 8.dp, bottom = 24.dp)
                 )
 
@@ -128,7 +120,7 @@ fun LoginScreen(
                     label = { Text("Email") },
                     placeholder = { Text("john@example.com") },
                     leadingIcon = {
-                        Icon(Icons.Default.Email, contentDescription = "Email Icon", tint = Color.Black)
+                        Icon(Icons.Default.Email, contentDescription = "Email Icon", tint = MaterialTheme.colorScheme.onSurface)
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
@@ -138,11 +130,11 @@ fun LoginScreen(
                         disabledContainerColor = inputBackground,
                         focusedBorderColor = primaryColor,
                         unfocusedBorderColor = Color.Transparent,
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black,
-                        focusedLabelColor = Color.Black,
-                        unfocusedLabelColor = Color.Black,
-                        cursorColor = Color.Black
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        focusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                        cursorColor = MaterialTheme.colorScheme.onSurface
                     ),
                     isError = emailError != null,
                     singleLine = true,
@@ -150,12 +142,12 @@ fun LoginScreen(
                         keyboardType = KeyboardType.Email,
                         imeAction = ImeAction.Next
                     ),
-                    textStyle = androidx.compose.ui.text.TextStyle(color = Color.Black)
+                    textStyle = androidx.compose.ui.text.TextStyle(color = MaterialTheme.colorScheme.onSurface)
                 )
                 if (emailError != null) {
                     Text(
                         text = emailError ?: "",
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.align(Alignment.Start).padding(start = 8.dp, top = 4.dp)
                     )
@@ -171,7 +163,7 @@ fun LoginScreen(
                     onValueChange = { viewModel.onPasswordChange(it) },
                     label = { Text("Password") },
                     leadingIcon = {
-                        Icon(Icons.Default.Lock, contentDescription = "Lock Icon", tint = Color.Black)
+                        Icon(Icons.Default.Lock, contentDescription = "Lock Icon", tint = MaterialTheme.colorScheme.onSurface)
                     },
                     trailingIcon = {
                         val image = if (passwordVisible)
@@ -182,7 +174,7 @@ fun LoginScreen(
                         val description = if (passwordVisible) "Hide password" else "Show password"
 
                         IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(imageVector = image, contentDescription = description, tint = Color.Black)
+                            Icon(imageVector = image, contentDescription = description, tint = MaterialTheme.colorScheme.onSurface)
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -193,11 +185,11 @@ fun LoginScreen(
                         disabledContainerColor = inputBackground,
                         focusedBorderColor = primaryColor,
                         unfocusedBorderColor = Color.Transparent,
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black,
-                        focusedLabelColor = Color.Black,
-                        unfocusedLabelColor = Color.Black,
-                        cursorColor = Color.Black
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        focusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                        cursorColor = MaterialTheme.colorScheme.onSurface
                     ),
                     isError = passwordError != null,
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -206,12 +198,12 @@ fun LoginScreen(
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
                     ),
-                    textStyle = androidx.compose.ui.text.TextStyle(color = Color.Black)
+                    textStyle = androidx.compose.ui.text.TextStyle(color = MaterialTheme.colorScheme.onSurface)
                 )
                  if (passwordError != null) {
                     Text(
                         text = passwordError ?: "",
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.align(Alignment.Start).padding(start = 8.dp, top = 4.dp)
                     )
