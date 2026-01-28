@@ -45,6 +45,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.PaddingValues
 import com.example.lifeping.ui.theme.*
+import com.example.lifeping.ui.components.LifePingAppBar
 
 import kotlinx.coroutines.launch
 
@@ -100,7 +101,7 @@ fun HomeScreen(
     ) {
         Scaffold(
             topBar = {
-                CenterAlignedTopAppBar(
+                LifePingAppBar(
                     title = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             // Placeholder for Logo
@@ -133,10 +134,7 @@ fun HomeScreen(
                                 tint = Color.White
                             )
                         }
-                    },
-                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
+                    }
                 )
             },
             containerColor = MaterialTheme.colorScheme.background
