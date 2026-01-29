@@ -56,6 +56,7 @@ fun HomeScreen(
     // onNavigate: (String) -> Unit, // Future navigation callback
     viewModel: HomeViewModel = viewModel(),
     onNavigateToProfile: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
     onLogout: () -> Unit = {},
     isDarkTheme: Boolean = false,
     onThemeToggle: () -> Unit = {}
@@ -93,7 +94,10 @@ fun HomeScreen(
                     scope.launch { drawerState.close() }
                     onNavigateToProfile()
                 }
-                DrawerItem(Icons.Default.Settings, "Settings", false) { /* Navigate */ }
+                DrawerItem(Icons.Default.Settings, "Settings", false) { 
+                    scope.launch { drawerState.close() }
+                    onNavigateToSettings()
+                }
                 DrawerItem(Icons.Default.Info, "About", false) { /* Navigate */ }
                 Spacer(modifier = Modifier.weight(1f))
                 Spacer(modifier = Modifier.height(16.dp))
