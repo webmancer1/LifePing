@@ -16,8 +16,11 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import com.example.lifeping.ui.auth.LoginScreen
 import com.example.lifeping.ui.home.HomeScreen
 import com.example.lifeping.ui.profile.ProfileScreen
+import com.example.lifeping.ui.settings.SettingsScreen
+import dagger.hilt.android.AndroidEntryPoint
 import com.example.lifeping.ui.theme.LifePingTheme
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +69,9 @@ class MainActivity : ComponentActivity() {
                                 onNavigateToProfile = {
                                     navController.navigate("profile")
                                 },
+                                onNavigateToSettings = {
+                                    navController.navigate("settings")
+                                },
                                 onLogout = {
                                     navController.navigate("login") {
                                         popUpTo("home") { inclusive = true }
@@ -84,6 +90,13 @@ class MainActivity : ComponentActivity() {
                                     navController.navigate("login") {
                                         popUpTo(0) { inclusive = true }
                                     }
+                                }
+                            )
+                        }
+                        composable("settings") {
+                            SettingsScreen(
+                                onNavigateBack = {
+                                    navController.popBackStack()
                                 }
                             )
                         }
