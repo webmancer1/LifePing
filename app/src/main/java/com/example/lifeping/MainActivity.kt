@@ -72,6 +72,9 @@ class MainActivity : ComponentActivity() {
                                 onNavigateToSettings = {
                                     navController.navigate("settings")
                                 },
+                                onNavigateToAbout = {
+                                    navController.navigate("about")
+                                },
                                 onLogout = {
                                     navController.navigate("login") {
                                         popUpTo("home") { inclusive = true }
@@ -97,6 +100,21 @@ class MainActivity : ComponentActivity() {
                             SettingsScreen(
                                 onNavigateBack = {
                                     navController.popBackStack()
+                                }
+                            )
+                        }
+                        composable("about") {
+                            com.example.lifeping.ui.about.AboutScreen(
+                                onNavigateToHome = {
+                                    navController.navigate("home") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                },
+                                onNavigateToProfile = {
+                                    navController.navigate("profile")
+                                },
+                                onNavigateToSettings = {
+                                    navController.navigate("settings")
                                 }
                             )
                         }
