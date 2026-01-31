@@ -46,7 +46,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.PaddingValues
 import com.example.lifeping.ui.theme.*
+import com.example.lifeping.ui.theme.*
 import com.example.lifeping.ui.components.LifePingAppBar
+import com.example.lifeping.ui.components.DrawerHeader
+import com.example.lifeping.ui.components.DrawerItem
 
 import kotlinx.coroutines.launch
 
@@ -57,6 +60,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel(),
     onNavigateToProfile: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
+    onNavigateToAbout: () -> Unit = {},
     onLogout: () -> Unit = {},
     isDarkTheme: Boolean = false,
     onThemeToggle: () -> Unit = {}
@@ -98,7 +102,10 @@ fun HomeScreen(
                     scope.launch { drawerState.close() }
                     onNavigateToSettings()
                 }
-                DrawerItem(Icons.Default.Info, "About", false) { /* Navigate */ }
+                                DrawerItem(Icons.Default.Info, "About", false) { 
+                    scope.launch { drawerState.close() }
+                    onNavigateToAbout()
+                }
                 Spacer(modifier = Modifier.weight(1f))
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -193,94 +200,9 @@ fun HomeContent(
     }
 }
 
-@Composable
-fun DrawerHeader(name: String, email: String, profilePictureUrl: String = "") {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(PrimaryBlue)
-            .padding(vertical = 32.dp, horizontal = 24.dp)
-    ) {
-        Column {
-            Surface(
-                modifier = Modifier.size(70.dp),
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.surface,
-                shadowElevation = 4.dp
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    if (profilePictureUrl.isNotEmpty()) {
-                        AsyncImage(
-                            model = profilePictureUrl,
-                            contentDescription = "Profile Picture",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                    
-                    if (profilePictureUrl.isEmpty() && name.isNotEmpty()) {
-                        Text(
-                            text = name.first().toString().uppercase(),
-                            color = PrimaryBlue,
-                            fontSize = 32.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = name,
-                fontWeight = FontWeight.Bold,
-                fontSize = 22.sp,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-            Text(
-                text = email,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
-                fontSize = 14.sp
-            )
-        }
-    }
-}
 
-@Composable
-fun DrawerItem(
-    icon: ImageVector,
-    label: String,
-    selected: Boolean = false,
-    textColor: Color = MaterialTheme.colorScheme.onSurface,
-    onClick: () -> Unit
-) {
-    NavigationDrawerItem(
-        label = {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium
-            )
-        },
-        selected = selected,
-        onClick = onClick,
-        icon = {
-            Icon(
-                imageVector = icon,
-                contentDescription = label,
-                tint = if (selected) PrimaryBlue else textColor
-            )
-        },
-        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = NavigationDrawerItemDefaults.colors(
-            selectedContainerColor = PrimaryBlue.copy(alpha = 0.1f),
-            selectedIconColor = PrimaryBlue,
-            selectedTextColor = PrimaryBlue,
-            unselectedIconColor = textColor,
-            unselectedTextColor = textColor
-        )
-    )
-}
+
 
 @Composable
 fun StatusCard(status: String) {
