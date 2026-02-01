@@ -118,6 +118,9 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
+                        composable("design_preview") {
+                            com.example.lifeping.ui.theme.DesignPreviewScreen()
+                        }
                     }
                 }
             }
