@@ -13,44 +13,54 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
 
 private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryBlue,
-    secondary = PurpleGrey80,
-    tertiary = Pink80,
-    background = BackgroundDark,
-    surface = SurfaceDark,
-    onBackground = TextPrimaryDark,
-    onSurface = TextPrimaryDark,
-    onPrimary = Color.White,
-    onSurfaceVariant = TextSecondaryDark
+    primary = DarkPrimary,
+    onPrimary = DarkOnPrimary,
+    secondary = DarkSecondary,
+    onSecondary = DarkOnSecondary,
+    tertiary = TertiaryIndigo, // Kept similar for accent
+    onTertiary = OnTertiaryIndigo, 
+    background = DarkBackground,
+    onBackground = NeutralWhite, // Better contrast
+    surface = DarkSurface,
+    onSurface = NeutralWhite,
+    surfaceVariant = DarkSurfaceVariant,
+    onSurfaceVariant = NeutralTextSecondary, // Light grey for secondary text
+    error = ErrorRed,
+    onError = OnErrorRed,
+    errorContainer = ErrorContainerRed,
+    onErrorContainer = OnErrorContainerRed
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = PrimaryBlue,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,
-    background = BackgroundGray,
-    surface = Color.White,
-    onBackground = TextPrimary,
-    onSurface = TextPrimary,
-    onPrimary = Color.White,
-    onSurfaceVariant = TextSecondary
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    onPrimary = OnPrimaryBlue,
+    primaryContainer = PrimaryContainerBlue,
+    onPrimaryContainer = OnPrimaryContainerBlue,
+    secondary = SecondaryTeal,
+    onSecondary = OnSecondaryTeal,
+    secondaryContainer = SecondaryContainerTeal,
+    onSecondaryContainer = OnSecondaryContainerTeal,
+    tertiary = TertiaryIndigo,
+    onTertiary = OnTertiaryIndigo,
+    tertiaryContainer = TertiaryContainerIndigo,
+    onTertiaryContainer = OnTertiaryContainerIndigo,
+    background = NeutralBackground,
+    onBackground = NeutralTextPrimary,
+    surface = NeutralSurface,
+    onSurface = NeutralTextPrimary,
+    surfaceVariant = NeutralSurfaceVariant,
+    onSurfaceVariant = NeutralTextSecondary,
+    error = ErrorRed,
+    onError = OnErrorRed,
+    errorContainer = ErrorContainerRed,
+    onErrorContainer = OnErrorContainerRed
 )
 
 @Composable
 fun LifePingTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -73,6 +83,7 @@ fun LifePingTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
+        shapes = Shapes,
         content = {
             content()
             android.util.Log.d("ThemeDebug", "LifePingTheme: Content composed in ${System.currentTimeMillis() - startTime}ms")
