@@ -279,7 +279,7 @@ fun LoginScreen(
                         .fillMaxWidth()
                         .height(50.dp),
                     shape = RoundedCornerShape(12.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = textColor)
                 ) {
                     // You might want to use a real Google logo here. For now using text/icon
@@ -326,6 +326,7 @@ fun LoginScreen(
                         modifier = Modifier.clickable { onCreateAccountClick() }
                     )
                 }
+
             }
         }
         SnackbarHost(
