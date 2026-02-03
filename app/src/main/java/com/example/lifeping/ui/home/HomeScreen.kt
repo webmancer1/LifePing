@@ -221,7 +221,7 @@ fun StatusCard(status: String) {
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = null,
-                        tint = SuccessGreen,
+                        tint = com.example.lifeping.ui.theme.SuccessGreen,
                         modifier = Modifier.size(32.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
@@ -240,12 +240,12 @@ fun StatusCard(status: String) {
                     }
                 }
                 Surface(
-                    color = ActiveGreen,
+                    color = MaterialTheme.colorScheme.secondaryContainer,
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Text(
                         text = "Active",
-                        color = SuccessGreen,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
@@ -333,7 +333,7 @@ fun StatsGrid(stats: HomeStats) {
         StatCard(
             modifier = Modifier.weight(1f),
             icon = Icons.Default.CalendarToday,
-            iconColor = PrimaryBlue, // Blue for streak
+            iconColor = MaterialTheme.colorScheme.primary, // Blue for streak
             value = stats.streakDays.toString(),
             label = "Days Streak"
         )
@@ -346,7 +346,7 @@ fun StatsGrid(stats: HomeStats) {
     StatCard(
         modifier = Modifier.fillMaxWidth(),
         icon = Icons.Default.Warning,
-        iconColor = WarningOrange,
+        iconColor = com.example.lifeping.ui.theme.WarningOrange,
         value = stats.missedCheckIns.toString(),
         label = "Missed Check-Ins"
     )
@@ -432,10 +432,10 @@ fun RecentCheckInItem(item: CheckInItem) {
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
-                    tint = SuccessGreen,
+                    tint = com.example.lifeping.ui.theme.SuccessGreen,
                     modifier = Modifier
                         .size(24.dp)
-                        .background(ActiveGreen, CircleShape)
+                        .background(MaterialTheme.colorScheme.secondaryContainer, CircleShape)
                         .padding(4.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
@@ -446,12 +446,12 @@ fun RecentCheckInItem(item: CheckInItem) {
                 )
             }
             Surface(
-                color = ActiveGreen,
+                color = MaterialTheme.colorScheme.secondaryContainer,
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
                     text = item.status,
-                    color = SuccessGreen,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold
