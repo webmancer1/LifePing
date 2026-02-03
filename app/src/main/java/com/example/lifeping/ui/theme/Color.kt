@@ -2,24 +2,47 @@ package com.example.lifeping.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// Brand Colors - Calming Safety Theme
+// Primary: Soft Slate Blue (Trust, Stability, Calm)
+val PrimaryBlue = Color(0xFF607D8B) 
+val OnPrimaryBlue = Color(0xFFFFFFFF)
+val PrimaryContainerBlue = Color(0xFFCFD8DC)
+val OnPrimaryContainerBlue = Color(0xFF263238)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+// Secondary: Soft Sage/Teal (Assurance, Growth, Safety)
+val SecondaryTeal = Color(0xFF80CBC4) 
+val OnSecondaryTeal = Color(0xFF00332E) // Dark green text for contrast
+val SecondaryContainerTeal = Color(0xFFE0F2F1)
+val OnSecondaryContainerTeal = Color(0xFF004D40)
 
-val PrimaryBlue = Color(0xFF5B51F7)
-val BackgroundGray = Color(0xFFF5F5F5)
-val SuccessGreen = Color(0xFF4CAF50)
-val ActiveGreen = Color(0xFFE8F5E9) // Light green for active badge
-val WarningOrange = Color(0xFFFF9800)
-val TextPrimary = Color(0xFF333333)
-val TextSecondary = Color(0xFF666666)
-val LogoutRed = Color(0xFFD32F2F)
+// Tertiary: Muted Indigo (Connection, Depth)
+val TertiaryIndigo = Color(0xFF9FA8DA)
+val OnTertiaryIndigo = Color(0xFF283593)
+val TertiaryContainerIndigo = Color(0xFFE8EAF6)
+val OnTertiaryContainerIndigo = Color(0xFF1A237E)
 
-val BackgroundDark = Color(0xFF121212)
-val SurfaceDark = Color(0xFF1E1E1E)
-val TextPrimaryDark = Color(0xFFE0E0E0)
-val TextSecondaryDark = Color(0xFFB0B0B0)
+// Neutral Surfaces & Backgrounds - Warm & Approachable
+val NeutralWhite = Color(0xFFFFFFFF)
+val NeutralBackground = Color(0xFFFAFAF9) // Very subtle warm paper tint
+val NeutralSurface = Color(0xFFFFFFFF) // Clean cards
+val NeutralSurfaceVariant = Color(0xFFF0F1F2) // Soft gray for separation
+val NeutralTextPrimary = Color(0xFF37474F) // Softer than black (Blue Grey 800)
+val NeutralTextSecondary = Color(0xFF78909C) // Blue Grey 400
+
+// Dark Theme Colors - Deep & Restful
+val DarkBackground = Color(0xFF121212) // Standard dark
+val DarkSurface = Color(0xFF1E262C) // Slight blue tint
+val DarkSurfaceVariant = Color(0xFF2D353C)
+val DarkPrimary = Color(0xFF90A4AE) // Lighter slate
+val DarkOnPrimary = Color(0xFF263238)
+val DarkSecondary = Color(0xFF80CBC4) // Keep teal
+val DarkOnSecondary = Color(0xFF00332E)
+
+// Functional Colors - Softened
+val ErrorRed = Color(0xFFE57373) // Soft Red
+val OnErrorRed = Color(0xFFFFFFFF)
+val ErrorContainerRed = Color(0xFFFFEBEE)
+val OnErrorContainerRed = Color(0xFFB71C1C)
+
+val SuccessGreen = Color(0xFF81C784) // Soft Green
+val WarningOrange = Color(0xFFFFB74D) // Soft Orange
