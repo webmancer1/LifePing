@@ -29,8 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.lifeping.ui.theme.BackgroundGray
-import com.example.lifeping.ui.theme.PrimaryBlue
+// Removed unused imports
 import androidx.compose.foundation.shape.RoundedCornerShape
 import com.example.lifeping.ui.components.LifePingAppBar
 
@@ -167,7 +166,7 @@ fun ProfileScreen(
                             .size(36.dp)
                             .clickable { launcher.launch("image/*") },
                         shape = CircleShape,
-                        color = PrimaryBlue,
+                        color = MaterialTheme.colorScheme.primary,
                         shadowElevation = 4.dp
                     ) {
                         Box(contentAlignment = Alignment.Center) {
@@ -306,7 +305,7 @@ fun ProfileScreen(
                     
                     Button(
                         onClick = { showDeleteDialog = true },
-                        colors = ButtonDefaults.buttonColors(containerColor = com.example.lifeping.ui.theme.LogoutRed),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text("Delete Account")
@@ -324,7 +323,7 @@ fun ProfileScreen(
                                     showDeleteDialog = false
                                     viewModel.deleteAccount(onLogout)
                                 },
-                                colors = ButtonDefaults.textButtonColors(contentColor = com.example.lifeping.ui.theme.LogoutRed)
+                                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
                             ) {
                                 Text("Delete")
                             }
