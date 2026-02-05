@@ -35,38 +35,64 @@ data class HomeStats(
     val missedCheckIns: Int
 )
 
-class HomeViewModel : ViewModel() {
+@dagger.hilt.android.lifecycle.HiltViewModel
+class HomeViewModel @javax.inject.Inject constructor(
+    private val checkInManager: com.example.lifeping.data.repository.CheckInManager,
+    private val checkInDao: com.example.lifeping.data.local.CheckInDao
+) : ViewModel() {
 
     private val auth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
 
     private val _userName = MutableStateFlow("")
-
     val userName: StateFlow<String> = _userName.asStateFlow()
 
     private val _userEmail = MutableStateFlow("")
-
     val userEmail: StateFlow<String> = _userEmail.asStateFlow()
 
     private val _userProfilePictureUrl = MutableStateFlow("")
     val userProfilePictureUrl: StateFlow<String> = _userProfilePictureUrl.asStateFlow()
 
-
     private val _status = MutableStateFlow("All Good")
     val status: StateFlow<String> = _status.asStateFlow()
 
-    private val _stats = MutableStateFlow(HomeStats(47, 12, 0))
-    val stats: StateFlow<HomeStats> = _stats.asStateFlow()
+    // Real stats calculation
+    val stats: StateFlow<HomeStats> = checkInDao.getAllCheckIns()
+        .map { checkIns ->
+            val total = checkIns.size
+            // Simple streak logic: consecutive days with check-ins (simplified)
+            val streak = if (checkIns.isNotEmpty()) 1 else 0 
+            val missed = checkIns.count { it.status == com.example.lifeping.data.model.CheckInStatus.MISSED }
+            HomeStats(total, streak, missed)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = HomeStats(0, 0, 0)
+        )
 
-    private val _nextCheckInTime = MutableStateFlow(LocalDateTime.now().plusHours(4))
+    private val _nextCheckInTime = MutableStateFlow<LocalDateTime?>(null)
     
     private val _countdownText = MutableStateFlow("Loading...")
     val countdownText: StateFlow<String> = _countdownText.asStateFlow()
 
-    private val _checkInHistory = MutableStateFlow<List<CheckInItem>>(emptyList())
-    // Expose wrapper
-    val checkInHistory: StateFlow<CheckInHistoryWrapper> = _checkInHistory
-        .map { CheckInHistoryWrapper(it) }
+    val checkInHistory: StateFlow<CheckInHistoryWrapper> = checkInDao.getRecentCheckIns(10)
+        .map { checkIns ->
+            val items = checkIns.map { entity ->
+                 // Parse timestamp string back to LocalDateTime for formatting or just use string if formatted
+                 // In CheckInManager we stored ISO String.
+                 val parsedTime = try {
+                     LocalDateTime.parse(entity.timestamp)
+                 } catch (e: Exception) { LocalDateTime.now() }
+                 
+                 CheckInItem(
+                     id = entity.id,
+                     time = parsedTime.format(DateTimeFormatter.ofPattern("EEEE, h:mm a")),
+                     status = entity.status.name
+                 )
+            }
+            CheckInHistoryWrapper(items)
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -75,24 +101,20 @@ class HomeViewModel : ViewModel() {
 
     init {
         loadUserProfile()
-        loadMockData()
-
+        refreshNextCheckInTime()
         startTimer()
     }
-
-    private fun loadMockData() {
-        _checkInHistory.value = listOf(
-            CheckInItem(1, "Today, 2:30 PM"),
-            CheckInItem(2, "Today, 10:15 AM"),
-            CheckInItem(3, "Yesterday, 6:45 PM"),
-            CheckInItem(4, "Yesterday, 2:20 PM")
-        )
+    
+    private fun refreshNextCheckInTime() {
+        viewModelScope.launch {
+            _nextCheckInTime.value = checkInManager.getNextDeadline()
+            updateCountdown()
+        }
     }
 
     private fun loadUserProfile() {
         val uid = auth.currentUser?.uid
         if (uid != null) {
-            // Use snapshot listener for real-time updates
             firestore.collection("users").document(uid).addSnapshotListener { document, e ->
                 if (e != null) return@addSnapshotListener
                 
@@ -121,38 +143,24 @@ class HomeViewModel : ViewModel() {
 
     private fun updateCountdown() {
         val now = LocalDateTime.now()
-        val target = _nextCheckInTime.value
+        val target = _nextCheckInTime.value ?: return
         val duration = Duration.between(now, target)
 
         if (duration.isNegative) {
-            _countdownText.value = "Now!"
+            _countdownText.value = "Overdue!"
+            _status.value = "Attention Needed"
         } else {
             val hours = duration.toHours()
             val minutes = duration.toMinutes() % 60
             _countdownText.value = "${hours}h ${minutes}m"
+            _status.value = "All Good"
         }
     }
 
     fun onCheckInNow() {
-        // Handle check-in logic
-        val now = LocalDateTime.now()
-        val formattedTime = now.format(DateTimeFormatter.ofPattern("EEEE, h:mm a"))
-        
-        val newItem = CheckInItem(
-            id = (_checkInHistory.value.maxOfOrNull { it.id } ?: 0) + 1,
-            time = "Today, ${now.format(DateTimeFormatter.ofPattern("h:mm a"))}"
-        )
-        
-        _checkInHistory.value = listOf(newItem) + _checkInHistory.value
-        
-        // Update stats
-        _stats.value = _stats.value.copy(
-            totalCheckIns = _stats.value.totalCheckIns + 1,
-            streakDays = _stats.value.streakDays // Logic to update streak would go here
-        )
-        
-        // Reset timer for demo
-        _nextCheckInTime.value = now.plusHours(4)
-        updateCountdown()
+        viewModelScope.launch {
+            checkInManager.performCheckIn()
+            refreshNextCheckInTime()
+        }
     }
 }
