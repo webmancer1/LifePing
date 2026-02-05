@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.lifeping.data.local.AppDatabase
 import com.example.lifeping.data.local.ContactDao
+import com.example.lifeping.data.local.CheckInDao
 import com.example.lifeping.data.preferences.UserPreferencesRepository
 import dagger.Module
 import dagger.Provides
@@ -31,6 +32,11 @@ object AppModule {
     @Provides
     fun provideContactDao(database: AppDatabase): ContactDao {
         return database.contactDao()
+    }
+
+    @Provides
+    fun provideCheckInDao(database: AppDatabase): CheckInDao {
+        return database.checkInDao()
     }
 
     @Provides
