@@ -21,7 +21,8 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val contactRepository: ContactRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
-    private val workManager: WorkManager
+    private val workManager: WorkManager,
+    private val checkInManager: com.example.lifeping.data.repository.CheckInManager
 ) : ViewModel() {
 
     val contacts: StateFlow<List<Contact>> = contactRepository.getAllContacts()
@@ -85,12 +86,17 @@ class SettingsViewModel @Inject constructor(
                 ExistingPeriodicWorkPolicy.UPDATE,
                 workRequest
             )
+            
+            // Reschedule escalation based on new interval
+            checkInManager.scheduleMissedCheckInDeadline()
         }
     }
 
     fun setGracePeriod(period: Long) {
         viewModelScope.launch {
             userPreferencesRepository.saveGracePeriod(period)
+            // Reschedule escalation based on new grace period
+            checkInManager.scheduleMissedCheckInDeadline()
         }
     }
 
