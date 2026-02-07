@@ -63,4 +63,15 @@ class CheckInManager @Inject constructor(
              LocalDateTime.now().plusNanos(interval * 1_000_000)
          }
     }
+
+    suspend fun resetAllData() {
+        // 1. Clear all history
+        checkInDao.deleteAllCheckIns()
+        
+        // 2. Reschedule based on NEW settings (which are already saved in repo before calling this)
+        // Since we deleted history, the "Next Deadline" logic in getNextDeadline() will fallback to LocalDateTime.now() + interval
+        // But scheduleMissedCheckInDeadline() uses a OneTimeWorkRequest with initialDelay = interval + grace
+        // This effectively restarts the "clock" from NOW.
+        scheduleMissedCheckInDeadline()
+    }
 }
