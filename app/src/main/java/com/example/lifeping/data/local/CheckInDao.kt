@@ -20,4 +20,7 @@ interface CheckInDao {
     
     @Query("SELECT * FROM check_ins ORDER BY id DESC LIMIT :limit")
     fun getRecentCheckIns(limit: Int): Flow<List<CheckIn>>
+
+    @Query("DELETE FROM check_ins")
+    suspend fun deleteAllCheckIns()
 }
