@@ -78,25 +78,17 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             userPreferencesRepository.saveCheckInInterval(interval)
             
-            val workRequest = PeriodicWorkRequestBuilder<CheckInWorker>(interval, TimeUnit.MILLISECONDS)
-                .build()
-
-            workManager.enqueueUniquePeriodicWork(
-                "check_in_work",
-                ExistingPeriodicWorkPolicy.UPDATE,
-                workRequest
-            )
-            
-            // Reschedule escalation based on new interval
-            checkInManager.scheduleMissedCheckInDeadline()
+            // Wipes all stats and restarts the timer from NOW + interval + grace
+            checkInManager.resetAllData()
         }
     }
 
     fun setGracePeriod(period: Long) {
         viewModelScope.launch {
             userPreferencesRepository.saveGracePeriod(period)
-            // Reschedule escalation based on new grace period
-            checkInManager.scheduleMissedCheckInDeadline()
+            
+            // Wipes all stats and restarts the timer from NOW + interval + grace
+            checkInManager.resetAllData()
         }
     }
 
