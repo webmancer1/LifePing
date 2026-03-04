@@ -75,6 +75,8 @@ fun HomeScreen(
     val status by viewModel.status.collectAsState()
     val stats by viewModel.stats.collectAsState()
     val countdownText by viewModel.countdownText.collectAsState()
+    val targetTimeText by viewModel.targetTimeText.collectAsState()
+    val progress by viewModel.progress.collectAsState()
     val historyWrapper by viewModel.checkInHistory.collectAsState()
     
     // Stable lambdas
@@ -159,6 +161,8 @@ fun HomeScreen(
                 paddingValues = paddingValues,
                 status = status,
                 countdownText = countdownText,
+                targetTimeText = targetTimeText,
+                progress = progress,
                 onCheckInNow = onCheckInNow,
                 stats = stats,
                 history = historyWrapper
@@ -173,6 +177,8 @@ fun HomeContent(
     paddingValues: PaddingValues,
     status: String,
     countdownText: String,
+    targetTimeText: String,
+    progress: Float,
     onCheckInNow: () -> Unit,
     stats: HomeStats,
     history: CheckInHistoryWrapper
@@ -190,7 +196,7 @@ fun HomeContent(
         item { StatusCard(status) }
 
         // Next Check-In Card
-        item { NextCheckInCard(countdownText, onCheckInNow) }
+        item { NextCheckInCard(countdownText, targetTimeText, progress, onCheckInNow)  }
 
         // Stats Grid
         item { StatsGrid(stats) }
@@ -257,7 +263,7 @@ fun StatusCard(status: String) {
 }
 
 @Composable
-fun NextCheckInCard(timeRemaining: String, onCheckIn: () -> Unit) {
+fun NextCheckInCard(timeRemaining: String, targetTimeText: String, progress: Float, onCheckIn: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
 
@@ -290,16 +296,14 @@ fun NextCheckInCard(timeRemaining: String, onCheckIn: () -> Unit) {
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = "03:30 PM", // Keeping static as per mockup request, but could be dynamic
+                text = targetTimeText,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
             )
             Spacer(modifier = Modifier.height(24.dp))
-            // Progress bar simulation
+            // Progress bar
             LinearProgressIndicator(
-                progress = 0.7f,
-
-
+                progress = { progress },
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.background
