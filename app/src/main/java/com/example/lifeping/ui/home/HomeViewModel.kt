@@ -72,9 +72,17 @@ class HomeViewModel @javax.inject.Inject constructor(
         )
 
     private val _nextCheckInTime = MutableStateFlow<LocalDateTime?>(null)
+    private var currentIntervalMs = 0L
+    private var lastCheckInTime = LocalDateTime.now()
     
     private val _countdownText = MutableStateFlow("Loading...")
     val countdownText: StateFlow<String> = _countdownText.asStateFlow()
+
+    private val _targetTimeText = MutableStateFlow("...")
+    val targetTimeText: StateFlow<String> = _targetTimeText.asStateFlow()
+
+    private val _progress = MutableStateFlow(0f)
+    val progress: StateFlow<Float> = _progress.asStateFlow()
 
     val checkInHistory: StateFlow<CheckInHistoryWrapper> = checkInDao.getRecentCheckIns(10)
         .map { checkIns ->
@@ -101,14 +109,19 @@ class HomeViewModel @javax.inject.Inject constructor(
 
     init {
         loadUserProfile()
-        refreshNextCheckInTime()
+        observeNextDeadline()
         startTimer()
     }
     
-    private fun refreshNextCheckInTime() {
+    private fun observeNextDeadline() {
         viewModelScope.launch {
-            _nextCheckInTime.value = checkInManager.getNextDeadline()
-            updateCountdown()
+            checkInManager.getNextDeadlineFlow().collect { info ->
+                _nextCheckInTime.value = info.targetTime
+                _targetTimeText.value = info.targetTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+                currentIntervalMs = info.intervalMs
+                lastCheckInTime = info.lastCheckInTime
+                updateCountdown()
+            }
         }
     }
 
@@ -149,18 +162,23 @@ class HomeViewModel @javax.inject.Inject constructor(
         if (duration.isNegative) {
             _countdownText.value = "Overdue!"
             _status.value = "Attention Needed"
+            _progress.value = 1f
         } else {
             val hours = duration.toHours()
             val minutes = duration.toMinutes() % 60
             _countdownText.value = "${hours}h ${minutes}m"
             _status.value = "All Good"
+            
+            val elapsed = java.time.Duration.between(lastCheckInTime, now).toMillis()
+            val calculatedProgress = if (currentIntervalMs > 0) elapsed.toFloat() / currentIntervalMs else 0f
+            _progress.value = calculatedProgress.coerceIn(0f, 1f)
         }
     }
 
     fun onCheckInNow() {
         viewModelScope.launch {
             checkInManager.performCheckIn()
-            refreshNextCheckInTime()
+            // Real-time flow handles UI updates automatically
         }
     }
 }
