@@ -8,11 +8,19 @@ import com.example.lifeping.data.model.CheckIn
 import com.example.lifeping.data.preferences.UserPreferencesRepository
 import com.example.lifeping.worker.MissedCheckInWorker
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.Flow
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
+
+data class DeadlineInfo(
+    val lastCheckInTime: LocalDateTime,
+    val targetTime: LocalDateTime,
+    val intervalMs: Long
+)
 
 @Singleton
 class CheckInManager @Inject constructor(
@@ -62,6 +70,21 @@ class CheckInManager @Inject constructor(
              // No check-in yet, deadline is now + interval (assuming fresh start)
              LocalDateTime.now().plusNanos(interval * 1_000_000)
          }
+    }
+
+    fun getNextDeadlineFlow(): Flow<DeadlineInfo> {
+        return combine(
+            checkInDao.getLatestCheckIn(),
+            userPreferencesRepository.checkInInterval
+        ) { latest, interval ->
+            val lastTime = if (latest != null) {
+                LocalDateTime.parse(latest.timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            } else {
+                LocalDateTime.now()
+            }
+            val targetTime = lastTime.plusNanos(interval * 1_000_000)
+            DeadlineInfo(lastTime, targetTime, interval)
+        }
     }
 
     suspend fun resetAllData() {
