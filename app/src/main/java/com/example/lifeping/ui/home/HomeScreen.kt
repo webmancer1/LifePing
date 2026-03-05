@@ -77,6 +77,7 @@ fun HomeScreen(
     val countdownText by viewModel.countdownText.collectAsState()
     val targetTimeText by viewModel.targetTimeText.collectAsState()
     val progress by viewModel.progress.collectAsState()
+    val isCheckInAllowed by viewModel.isCheckInAllowed.collectAsState()
     val historyWrapper by viewModel.checkInHistory.collectAsState()
     
     // Stable lambdas
@@ -163,6 +164,7 @@ fun HomeScreen(
                 countdownText = countdownText,
                 targetTimeText = targetTimeText,
                 progress = progress,
+                isCheckInAllowed = isCheckInAllowed,
                 onCheckInNow = onCheckInNow,
                 stats = stats,
                 history = historyWrapper
@@ -179,6 +181,7 @@ fun HomeContent(
     countdownText: String,
     targetTimeText: String,
     progress: Float,
+    isCheckInAllowed: Boolean,
     onCheckInNow: () -> Unit,
     stats: HomeStats,
     history: CheckInHistoryWrapper
@@ -196,7 +199,7 @@ fun HomeContent(
         item { StatusCard(status) }
 
         // Next Check-In Card
-        item { NextCheckInCard(countdownText, targetTimeText, progress, onCheckInNow)  }
+        item { NextCheckInCard(countdownText, targetTimeText, progress, isCheckInAllowed, onCheckInNow)  }
 
         // Stats Grid
         item { StatsGrid(stats) }
@@ -263,7 +266,7 @@ fun StatusCard(status: String) {
 }
 
 @Composable
-fun NextCheckInCard(timeRemaining: String, targetTimeText: String, progress: Float, onCheckIn: () -> Unit) {
+fun NextCheckInCard(timeRemaining: String, targetTimeText: String, progress: Float, isCheckInAllowed: Boolean, onCheckIn: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
 
@@ -311,11 +314,16 @@ fun NextCheckInCard(timeRemaining: String, targetTimeText: String, progress: Flo
             Spacer(modifier = Modifier.height(24.dp))
             Button(
                 onClick = onCheckIn,
+                enabled = isCheckInAllowed,
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Text(text = "Check In Now", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text(
+                    text = if (isCheckInAllowed) "Check In Now" else "Please Wait...", 
+                    fontSize = 16.sp, 
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }
