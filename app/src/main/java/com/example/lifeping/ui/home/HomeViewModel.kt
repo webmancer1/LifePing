@@ -84,6 +84,9 @@ class HomeViewModel @javax.inject.Inject constructor(
     private val _progress = MutableStateFlow(0f)
     val progress: StateFlow<Float> = _progress.asStateFlow()
 
+    private val _isCheckInAllowed = MutableStateFlow(false)
+    val isCheckInAllowed: StateFlow<Boolean> = _isCheckInAllowed.asStateFlow()
+
     val checkInHistory: StateFlow<CheckInHistoryWrapper> = checkInDao.getRecentCheckIns(10)
         .map { checkIns ->
             val items = checkIns.map { entity ->
@@ -163,6 +166,7 @@ class HomeViewModel @javax.inject.Inject constructor(
             _countdownText.value = "Overdue!"
             _status.value = "Attention Needed"
             _progress.value = 1f
+            _isCheckInAllowed.value = true
         } else {
             val hours = duration.toHours()
             val minutes = duration.toMinutes() % 60
@@ -172,6 +176,7 @@ class HomeViewModel @javax.inject.Inject constructor(
             val elapsed = java.time.Duration.between(lastCheckInTime, now).toMillis()
             val calculatedProgress = if (currentIntervalMs > 0) elapsed.toFloat() / currentIntervalMs else 0f
             _progress.value = calculatedProgress.coerceIn(0f, 1f)
+            _isCheckInAllowed.value = false
         }
     }
 
