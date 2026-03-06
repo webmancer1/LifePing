@@ -5,7 +5,10 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.lifeping.data.local.CheckInDao
+import com.example.lifeping.data.model.CheckIn
+import com.example.lifeping.data.model.CheckInStatus
 import com.example.lifeping.data.preferences.UserPreferencesRepository
+import com.example.lifeping.data.repository.CheckInManager
 import com.example.lifeping.data.repository.ContactRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -20,7 +23,8 @@ class MissedCheckInWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val checkInDao: CheckInDao,
     private val contactRepository: ContactRepository,
-    private val userPreferencesRepository: UserPreferencesRepository
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val checkInManager: CheckInManager
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
@@ -52,6 +56,20 @@ class MissedCheckInWorker @AssistedInject constructor(
         }
 
         // If we are here, TRULY MISSED.
+        android.util.Log.d("MissedCheckInWorker", "Check-in truly missed. Recording missed check-in.")
+        
+        // Record the missed check-in in the database
+        val isoFormat = now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        val missedCheckIn = CheckIn(
+            timestamp = isoFormat,
+            status = CheckInStatus.MISSED
+        )
+        checkInDao.insertCheckIn(missedCheckIn)
+        
+        // Also update the base check-in time so the timer restarts from this missed point
+        userPreferencesRepository.saveBaseCheckInTime(isoFormat)
+        checkInManager.scheduleMissedCheckInDeadline()
+
         triggerEscalation()
 
         return Result.success()
