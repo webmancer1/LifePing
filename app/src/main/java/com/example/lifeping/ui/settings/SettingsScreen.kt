@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -50,6 +51,7 @@ fun SettingsScreen(
 
     var showAddContactDialog by remember { mutableStateOf(false) }
     var contactToEdit by remember { mutableStateOf<Contact?>(null) }
+    var showResetConfirmDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -173,6 +175,30 @@ fun SettingsScreen(
                     )
                 }
             }
+
+            // Data Management Section
+            item {
+                SettingsSectionCard(title = "Data Management", icon = Icons.Default.Warning) {
+                    Button(
+                        onClick = { showResetConfirmDialog = true },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onErrorContainer
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(20.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Reset Home Page Data")
+                    }
+                    Text(
+                        text = "This will clear your check-in history, total count, and streak. Your next check-in time and schedule will NOT be affected.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+            }
         }
     }
 
@@ -193,6 +219,33 @@ fun SettingsScreen(
             onSave = { contact ->
                 viewModel.updateContact(contact)
                 contactToEdit = null
+            }
+        )
+    }
+
+    if (showResetConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showResetConfirmDialog = false },
+            title = { Text("Reset Data?") },
+            text = { Text("Are you sure you want to reset your home page data? This action cannot be undone, but your next check-in countdown will remain undisturbed.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.resetHistoryData()
+                        showResetConfirmDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError
+                    )
+                ) {
+                    Text("Reset")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showResetConfirmDialog = false }) {
+                    Text("Cancel")
+                }
             }
         )
     }
