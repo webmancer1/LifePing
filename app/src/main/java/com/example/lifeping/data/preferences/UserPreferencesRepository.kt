@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -19,6 +20,7 @@ class UserPreferencesRepository(private val context: Context) {
     private val GRACE_PERIOD = longPreferencesKey("grace_period")
     private val NOTIFY_UPCOMING = booleanPreferencesKey("notify_upcoming")
     private val AUTO_ALERT = booleanPreferencesKey("auto_alert")
+    private val BASE_CHECK_IN_TIME = stringPreferencesKey("base_check_in_time")
 
     val isDarkTheme: Flow<Boolean> = context.dataStore.data
         .map { preferences ->
@@ -38,6 +40,9 @@ class UserPreferencesRepository(private val context: Context) {
 
     val autoAlert: Flow<Boolean> = context.dataStore.data
         .map { preferences -> preferences[AUTO_ALERT] ?: true }
+
+    val baseCheckInTime: Flow<String?> = context.dataStore.data
+        .map { preferences -> preferences[BASE_CHECK_IN_TIME] }
 
     suspend fun saveThemePreference(isDarkTheme: Boolean) {
         context.dataStore.edit { preferences ->
@@ -76,6 +81,12 @@ class UserPreferencesRepository(private val context: Context) {
     suspend fun saveAutoAlert(enabled: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[AUTO_ALERT] = enabled
+        }
+    }
+
+    suspend fun saveBaseCheckInTime(time: String) {
+        context.dataStore.edit { preferences ->
+            preferences[BASE_CHECK_IN_TIME] = time
         }
     }
 }
