@@ -103,4 +103,10 @@ class SettingsViewModel @Inject constructor(
             userPreferencesRepository.saveAutoAlert(enabled)
         }
     }
+
+    fun resetHistoryData() {
+        viewModelScope.launch {
+            checkInManager.resetHistoryDataOnly()
+        }
+    }
 }
