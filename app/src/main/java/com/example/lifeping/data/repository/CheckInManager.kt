@@ -31,10 +31,12 @@ class CheckInManager @Inject constructor(
 
     suspend fun performCheckIn() {
         val now = LocalDateTime.now()
+        val isoFormat = now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         val checkIn = CheckIn(
-            timestamp = now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            timestamp = isoFormat
         )
         checkInDao.insertCheckIn(checkIn)
+        userPreferencesRepository.saveBaseCheckInTime(isoFormat)
         
         scheduleMissedCheckInDeadline()
     }
@@ -60,24 +62,29 @@ class CheckInManager @Inject constructor(
     }
 
     suspend fun getNextDeadline(): LocalDateTime {
+         val baseTimeStr = userPreferencesRepository.baseCheckInTime.first()
          val latest = checkInDao.getLatestCheckIn().first()
          val interval = userPreferencesRepository.checkInInterval.first()
          
-         return if (latest != null) {
-             val lastTime = LocalDateTime.parse(latest.timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-             lastTime.plusNanos(interval * 1_000_000) // millis to nanos
+         val lastTime = if (baseTimeStr != null) {
+             LocalDateTime.parse(baseTimeStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+         } else if (latest != null) {
+             LocalDateTime.parse(latest.timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
          } else {
-             // No check-in yet, deadline is now + interval (assuming fresh start)
-             LocalDateTime.now().plusNanos(interval * 1_000_000)
+             LocalDateTime.now()
          }
+         return lastTime.plusNanos(interval * 1_000_000) // millis to nanos
     }
 
     fun getNextDeadlineFlow(): Flow<DeadlineInfo> {
         return combine(
+            userPreferencesRepository.baseCheckInTime,
             checkInDao.getLatestCheckIn(),
             userPreferencesRepository.checkInInterval
-        ) { latest, interval ->
-            val lastTime = if (latest != null) {
+        ) { baseTimeStr, latest, interval ->
+            val lastTime = if (baseTimeStr != null) {
+                LocalDateTime.parse(baseTimeStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            } else if (latest != null) {
                 LocalDateTime.parse(latest.timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
             } else {
                 LocalDateTime.now()
@@ -91,10 +98,27 @@ class CheckInManager @Inject constructor(
         // 1. Clear all history
         checkInDao.deleteAllCheckIns()
         
-        // 2. Reschedule based on NEW settings (which are already saved in repo before calling this)
-        // Since we deleted history, the "Next Deadline" logic in getNextDeadline() will fallback to LocalDateTime.now() + interval
-        // But scheduleMissedCheckInDeadline() uses a OneTimeWorkRequest with initialDelay = interval + grace
-        // This effectively restarts the "clock" from NOW.
+        // 2. Set base check-in time to now so timer restarts
+        val now = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        userPreferencesRepository.saveBaseCheckInTime(now)
+        
+        // 3. Reschedule based on NEW settings (which are already saved in repo before calling this)
         scheduleMissedCheckInDeadline()
+    }
+
+    suspend fun resetHistoryDataOnly() {
+        // Ensure base check in time is saved if it hasn't been yet to prevent countdown drop
+        val currentBaseTime = userPreferencesRepository.baseCheckInTime.first()
+        if (currentBaseTime == null) {
+            val latest = checkInDao.getLatestCheckIn().first()
+            if (latest != null) {
+                userPreferencesRepository.saveBaseCheckInTime(latest.timestamp)
+            } else {
+                userPreferencesRepository.saveBaseCheckInTime(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+            }
+        }
+        
+        // Clear history. Target time next check in remains identical.
+        checkInDao.deleteAllCheckIns()
     }
 }
