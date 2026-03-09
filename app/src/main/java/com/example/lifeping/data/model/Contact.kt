@@ -10,5 +10,8 @@ data class Contact(
     val name: String,
     val relationship: String,
     val email: String,
-    val phoneNumber: String
+    val phoneNumber: String,
+    val notifyViaSms: Boolean = true,
+    val notifyViaEmail: Boolean = false,
+    val notifyViaWhatsapp: Boolean = false
 )
