@@ -12,7 +12,8 @@ This project is built as a robust MVP, leveraging modern Android development pra
 -   **Scheduled Wellness Checks:** Customizable check-in intervals to fit your routine.
 -   **"I'm OK" Confirmation:** Simple, one-tap check-in process.
 -   **Missed Check-in Detection:** Background monitoring that detects when a check-in is missed.
--   **Emergency Escalation:** Automatically notifies designated trusted contacts via local notifications (with future SMS/Email integration planned).
+-   **Emergency Escalation:** Automatically notifies designated trusted contacts via local notifications and **direct SMS** when a check-in is completely missed.
+-   **Future Integrations:** Email and WhatsApp API integrations are partially implemented and coming soon.
 
 ### Modern User Experience
 -   **Material Design 3:** A beautiful, adaptive UI with dynamic color support and dark/light mode.
