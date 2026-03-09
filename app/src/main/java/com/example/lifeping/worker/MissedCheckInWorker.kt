@@ -10,6 +10,7 @@ import com.example.lifeping.data.model.CheckInStatus
 import com.example.lifeping.data.preferences.UserPreferencesRepository
 import com.example.lifeping.data.repository.CheckInManager
 import com.example.lifeping.data.repository.ContactRepository
+import com.example.lifeping.util.NotificationSender
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
@@ -24,7 +25,8 @@ class MissedCheckInWorker @AssistedInject constructor(
     private val checkInDao: CheckInDao,
     private val contactRepository: ContactRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
-    private val checkInManager: CheckInManager
+    private val checkInManager: CheckInManager,
+    private val notificationSender: NotificationSender
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
@@ -84,11 +86,19 @@ class MissedCheckInWorker @AssistedInject constructor(
         }
 
         contacts.forEach { contact ->
-            // In a real app, send request to backend or Send SMS (with permission)
             android.util.Log.e("LifePingEscalation", "ALERT: User missed check-in! Notifying ${contact.name} (${contact.phoneNumber})")
             
-            // Generate a local notification for the user too?
-            // "We notified your contacts."
+            val messageText = "URGENT: I have missed my LifePing check-in and failed to respond during the grace period. Please check on me."
+            
+            if (contact.notifyViaSms) {
+                notificationSender.sendSms(contact.phoneNumber, messageText)
+            }
+            if (contact.notifyViaEmail && contact.email.isNotBlank()) {
+                notificationSender.sendEmail(contact.email, "LifePing Emergency Alert", messageText)
+            }
+            if (contact.notifyViaWhatsapp) {
+                notificationSender.sendWhatsApp(contact.phoneNumber, messageText)
+            }
         }
     }
 }

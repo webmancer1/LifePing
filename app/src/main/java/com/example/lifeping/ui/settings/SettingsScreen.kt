@@ -304,6 +304,20 @@ fun ContactItem(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                
+                val channels = mutableListOf<String>()
+                if (contact.notifyViaSms) channels.add("SMS")
+                if (contact.notifyViaEmail) channels.add("Email")
+                if (contact.notifyViaWhatsapp) channels.add("WhatsApp")
+                
+                if (channels.isNotEmpty()) {
+                    Text(
+                        text = "Alert via: ${channels.joinToString(", ")}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
             }
             Row {
                 IconButton(onClick = onEdit) {
@@ -387,6 +401,9 @@ fun ContactDialog(
     var relationship by remember { mutableStateOf(contact?.relationship ?: "") }
     var email by remember { mutableStateOf(contact?.email ?: "") }
     var phone by remember { mutableStateOf(contact?.phoneNumber ?: "") }
+    var notifyViaSms by remember { mutableStateOf(contact?.notifyViaSms ?: true) }
+    var notifyViaEmail by remember { mutableStateOf(contact?.notifyViaEmail ?: false) }
+    var notifyViaWhatsapp by remember { mutableStateOf(contact?.notifyViaWhatsapp ?: false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -397,6 +414,19 @@ fun ContactDialog(
                 OutlinedTextField(value = relationship, onValueChange = { relationship = it }, label = { Text("Relationship (e.g. Sister, Friend)") })
                 OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text("Email") })
                 OutlinedTextField(value = phone, onValueChange = { phone = it }, label = { Text("Phone Number") })
+
+                Text(text = "Notification Methods", style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(checked = notifyViaSms, onCheckedChange = { notifyViaSms = it })
+                    Text("SMS", style = MaterialTheme.typography.bodyMedium)
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Checkbox(checked = false, onCheckedChange = null, enabled = false)
+                    Text("Email (Coming soon)", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(checked = false, onCheckedChange = null, enabled = false)
+                    Text("WhatsApp (Coming soon)", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                }
             }
         },
         confirmButton = {
@@ -408,7 +438,10 @@ fun ContactDialog(
                             name = name,
                             relationship = relationship,
                             email = email,
-                            phoneNumber = phone
+                            phoneNumber = phone,
+                            notifyViaSms = notifyViaSms,
+                            notifyViaEmail = false, // Forced false as it's coming soon
+                            notifyViaWhatsapp = false // Forced false as it's coming soon
                         )
                     )
                 }
