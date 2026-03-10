@@ -35,6 +35,7 @@ class MissedCheckInWorker @AssistedInject constructor(
         val latestCheckIn = checkInDao.getLatestCheckIn().first()
         val interval = userPreferencesRepository.checkInInterval.first()
         val gracePeriod = userPreferencesRepository.gracePeriod.first()
+        val autoAlert = userPreferencesRepository.autoAlert.first()
         
         val now = LocalDateTime.now()
         val timeoutThreshold = interval + gracePeriod
@@ -72,7 +73,11 @@ class MissedCheckInWorker @AssistedInject constructor(
         userPreferencesRepository.saveBaseCheckInTime(isoFormat)
         checkInManager.scheduleMissedCheckInDeadline()
 
-        triggerEscalation()
+        if (autoAlert) {
+            triggerEscalation()
+        } else {
+            android.util.Log.d("MissedCheckInWorker", "Auto Alert is disabled. Contact notifications bypassed.")
+        }
 
         return Result.success()
     }
