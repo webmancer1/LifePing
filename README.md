@@ -6,7 +6,7 @@ This project is built as a robust MVP, leveraging modern Android development pra
 
 ---
 
-## 📱 Key Features
+##  Key Features
 
 ### Core Functionality
 -   **Scheduled Wellness Checks:** Customizable check-in intervals to fit your routine.
@@ -23,7 +23,7 @@ This project is built as a robust MVP, leveraging modern Android development pra
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 This project uses the latest Android technologies to ensure performance, maintainability, and scalability.
 
@@ -45,7 +45,7 @@ This project uses the latest Android technologies to ensure performance, maintai
 
 ---
 
-## 🏗 Architecture Overview
+##  Architecture Overview
 
 The app follows the **Guide to App Architecture** recommendations:
 
@@ -56,7 +56,7 @@ The app follows the **Guide to App Architecture** recommendations:
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 -   Android Studio Koala or newer.
@@ -85,7 +85,7 @@ The app follows the **Guide to App Architecture** recommendations:
 
 ---
 
-## 🤝 Contributing
+##  Contributing
 
 Contributions are welcome! If you have suggestions for improvements or bug fixes:
 
@@ -97,6 +97,4 @@ Contributions are welcome! If you have suggestions for improvements or bug fixes
 
 ---
 
-## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
