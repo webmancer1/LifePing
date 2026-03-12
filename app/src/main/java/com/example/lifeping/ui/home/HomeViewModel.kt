@@ -71,6 +71,8 @@ class HomeViewModel @javax.inject.Inject constructor(
             initialValue = HomeStats(0, 0, 0)
         )
 
+    private val _lastCheckInStatus = MutableStateFlow<com.example.lifeping.data.model.CheckInStatus?>(null)
+
     private val _nextCheckInTime = MutableStateFlow<LocalDateTime?>(null)
     private var currentIntervalMs = 0L
     private var lastCheckInTime = LocalDateTime.now()
@@ -89,6 +91,9 @@ class HomeViewModel @javax.inject.Inject constructor(
 
     val checkInHistory: StateFlow<CheckInHistoryWrapper> = checkInDao.getRecentCheckIns(10)
         .map { checkIns ->
+            if (checkIns.isNotEmpty()) {
+                _lastCheckInStatus.value = checkIns.first().status
+            }
             val items = checkIns.map { entity ->
                  // Parse timestamp string back to LocalDateTime for formatting or just use string if formatted
                  // In CheckInManager we stored ISO String.
@@ -162,6 +167,8 @@ class HomeViewModel @javax.inject.Inject constructor(
         val target = _nextCheckInTime.value ?: return
         val duration = Duration.between(now, target)
 
+        val lastStatus = _lastCheckInStatus.value
+
         if (duration.isNegative) {
             _countdownText.value = "Overdue!"
             _status.value = "Attention Needed"
@@ -171,7 +178,12 @@ class HomeViewModel @javax.inject.Inject constructor(
             val hours = duration.toHours()
             val minutes = duration.toMinutes() % 60
             _countdownText.value = "${hours}h ${minutes}m"
-            _status.value = "All Good"
+            
+            if (lastStatus == com.example.lifeping.data.model.CheckInStatus.MISSED) {
+                _status.value = "Missed Check-in"
+            } else {
+                _status.value = "All Good"
+            }
             
             val elapsed = java.time.Duration.between(lastCheckInTime, now).toMillis()
             val calculatedProgress = if (currentIntervalMs > 0) elapsed.toFloat() / currentIntervalMs else 0f
