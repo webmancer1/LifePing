@@ -215,6 +215,13 @@ fun HomeContent(
 
 @Composable
 fun StatusCard(status: String) {
+    val (icon, color, message) = when (status) {
+        "All Good" -> Triple(Icons.Default.CheckCircle, com.example.lifeping.ui.theme.SuccessGreen, "You're on track with your check-ins")
+        "Missed Check-in" -> Triple(Icons.Default.Warning, com.example.lifeping.ui.theme.WarningOrange, "You missed your last check-in!")
+        "Attention Needed" -> Triple(Icons.Default.Warning, MaterialTheme.colorScheme.error, "Check-in is overdue. Please respond.")
+        else -> Triple(Icons.Default.Info, MaterialTheme.colorScheme.primary, "Status: $status")
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -228,9 +235,9 @@ fun StatusCard(status: String) {
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Default.CheckCircle,
+                        imageVector = icon,
                         contentDescription = null,
-                        tint = com.example.lifeping.ui.theme.SuccessGreen,
+                        tint = color,
                         modifier = Modifier.size(32.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
@@ -242,19 +249,19 @@ fun StatusCard(status: String) {
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "You're on track with your check-ins",
+                            text = message,
                             fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
                 Surface(
-                    color = MaterialTheme.colorScheme.secondaryContainer,
+                    color = if (status == "All Good") MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.errorContainer,
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Text(
-                        text = "Active",
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        text = if (status == "All Good") "Active" else "Warning",
+                        color = if (status == "All Good") MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onErrorContainer,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
@@ -426,6 +433,12 @@ fun RecentCheckInsSection(history: List<CheckInItem>) {
 
 @Composable
 fun RecentCheckInItem(item: CheckInItem) {
+    val isMissed = item.status == com.example.lifeping.data.model.CheckInStatus.MISSED.name
+    val icon = if (isMissed) Icons.Default.Warning else Icons.Default.Check
+    val iconColor = if (isMissed) com.example.lifeping.ui.theme.WarningOrange else com.example.lifeping.ui.theme.SuccessGreen
+    val containerColor = if (isMissed) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.secondaryContainer
+    val contentColor = if (isMissed) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSecondaryContainer
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -442,12 +455,12 @@ fun RecentCheckInItem(item: CheckInItem) {
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = Icons.Default.Check,
+                    imageVector = icon,
                     contentDescription = null,
-                    tint = com.example.lifeping.ui.theme.SuccessGreen,
+                    tint = iconColor,
                     modifier = Modifier
                         .size(24.dp)
-                        .background(MaterialTheme.colorScheme.secondaryContainer, CircleShape)
+                        .background(containerColor, CircleShape)
                         .padding(4.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
@@ -458,12 +471,12 @@ fun RecentCheckInItem(item: CheckInItem) {
                 )
             }
             Surface(
-                color = MaterialTheme.colorScheme.secondaryContainer,
+                color = containerColor,
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
                     text = item.status,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    color = contentColor,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold
