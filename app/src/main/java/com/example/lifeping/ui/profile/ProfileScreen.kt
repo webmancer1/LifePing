@@ -32,6 +32,7 @@ import coil.request.ImageRequest
 // Removed unused imports
 import androidx.compose.foundation.shape.RoundedCornerShape
 import com.example.lifeping.ui.components.LifePingAppBar
+import com.example.lifeping.ui.theme.BgProfile
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
