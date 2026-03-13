@@ -29,6 +29,12 @@ val NeutralSurfaceVariant = Color(0xFFF1F5F9) // Slate 100
 val NeutralTextPrimary = Color(0xFF0F172A) // Slate 900
 val NeutralTextSecondary = Color(0xFF64748B) // Slate 500
 
+// Page-Specific Backgrounds (Subtle Tints)
+val BgHome = Color(0xFFEEF2FF) // Indigo 50
+val BgProfile = Color(0xFFF0FDFA) // Teal 50
+val BgSettings = Color(0xFFF8FAFC) // Slate 50
+val BgAbout = Color(0xFFFFFBEB) // Amber 50
+
 // Dark Theme Colors - Deep & Elegant
 val DarkBackground = Color(0xFF0F172A) // Slate 900
 val DarkSurface = Color(0xFF1E293B) // Slate 800
