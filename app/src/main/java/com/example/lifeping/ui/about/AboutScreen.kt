@@ -104,7 +104,7 @@ fun AboutScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .background(MaterialTheme.colorScheme.background)
+                    .background(if (androidx.compose.foundation.isSystemInDarkTheme()) MaterialTheme.colorScheme.background else BgAbout)
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
