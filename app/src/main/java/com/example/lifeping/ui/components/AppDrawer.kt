@@ -15,14 +15,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.lifeping.ui.theme.PrimaryBlue
+import com.example.lifeping.ui.theme.PrimaryIndigo
 
 @Composable
 fun DrawerHeader(name: String, email: String, profilePictureUrl: String = "") {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(PrimaryBlue)
+            .background(PrimaryIndigo)
             .padding(vertical = 32.dp, horizontal = 24.dp)
     ) {
         Column {
@@ -45,7 +45,7 @@ fun DrawerHeader(name: String, email: String, profilePictureUrl: String = "") {
                     if (profilePictureUrl.isEmpty() && name.isNotEmpty()) {
                         Text(
                             text = name.first().toString().uppercase(),
-                            color = PrimaryBlue,
+                            color = PrimaryIndigo,
                             fontSize = 32.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -91,15 +91,15 @@ fun DrawerItem(
             Icon(
                 imageVector = icon,
                 contentDescription = label,
-                tint = if (selected) PrimaryBlue else textColor
+                tint = if (selected) PrimaryIndigo else textColor
             )
         },
         modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
         shape = RoundedCornerShape(12.dp),
         colors = NavigationDrawerItemDefaults.colors(
-            selectedContainerColor = PrimaryBlue.copy(alpha = 0.1f),
-            selectedIconColor = PrimaryBlue,
-            selectedTextColor = PrimaryBlue,
+            selectedContainerColor = PrimaryIndigo.copy(alpha = 0.1f),
+            selectedIconColor = PrimaryIndigo,
+            selectedTextColor = PrimaryIndigo,
             unselectedIconColor = textColor,
             unselectedTextColor = textColor
         )
