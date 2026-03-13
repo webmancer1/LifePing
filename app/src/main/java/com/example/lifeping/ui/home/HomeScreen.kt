@@ -155,7 +155,7 @@ fun HomeScreen(
                     }
                 )
             },
-            containerColor = MaterialTheme.colorScheme.background
+            containerColor = if (isDarkTheme) MaterialTheme.colorScheme.background else BgHome
 
         ) { paddingValues ->
             HomeContent(
