@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.lifeping.ui.theme.PrimaryBlue
+import com.example.lifeping.ui.theme.PrimaryIndigo
 import com.example.lifeping.ui.components.LifePingAppBar
 import com.example.lifeping.ui.components.DrawerHeader
 import com.example.lifeping.ui.components.DrawerItem
@@ -159,13 +159,13 @@ fun HeaderSection() {
         Surface(
             modifier = Modifier.size(80.dp),
             shape = CircleShape,
-            color = PrimaryBlue.copy(alpha = 0.1f)
+            color = PrimaryIndigo.copy(alpha = 0.1f)
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     imageVector = Icons.Default.Security,
                     contentDescription = "LifePing Logo",
-                    tint = PrimaryBlue,
+                    tint = PrimaryIndigo,
                     modifier = Modifier.size(48.dp)
                 )
             }
@@ -273,7 +273,7 @@ fun HowItWorksStep(number: String, title: String, description: String) {
         Surface(
             modifier = Modifier.size(32.dp),
             shape = CircleShape,
-            color = PrimaryBlue
+            color = PrimaryIndigo
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Text(
@@ -364,7 +364,7 @@ fun FeatureCard(icon: ImageVector, title: String, description: String) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = PrimaryBlue,
+                tint = PrimaryIndigo,
                 modifier = Modifier.size(28.dp)
             )
             Spacer(modifier = Modifier.height(12.dp))
