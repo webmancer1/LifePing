@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.lifeping.data.model.Contact
 import com.example.lifeping.ui.components.LifePingAppBar
+import com.example.lifeping.ui.theme.BgSettings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
