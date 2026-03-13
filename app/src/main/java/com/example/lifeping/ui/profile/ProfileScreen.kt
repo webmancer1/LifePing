@@ -98,7 +98,7 @@ fun ProfileScreen(
                 }
             )
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = if (androidx.compose.foundation.isSystemInDarkTheme()) MaterialTheme.colorScheme.background else BgProfile
     ) { padding ->
         Box(
             modifier = Modifier
