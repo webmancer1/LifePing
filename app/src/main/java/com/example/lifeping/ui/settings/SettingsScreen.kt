@@ -73,7 +73,7 @@ fun SettingsScreen(
                 Icon(Icons.Default.Add, contentDescription = "Add Contact")
             }
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = if (androidx.compose.foundation.isSystemInDarkTheme()) MaterialTheme.colorScheme.background else BgSettings
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
