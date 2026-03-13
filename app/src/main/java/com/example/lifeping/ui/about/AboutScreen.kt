@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.lifeping.ui.theme.PrimaryIndigo
+import com.example.lifeping.ui.theme.BgAbout
 import com.example.lifeping.ui.components.LifePingAppBar
 import com.example.lifeping.ui.components.DrawerHeader
 import com.example.lifeping.ui.components.DrawerItem
@@ -104,7 +105,8 @@ fun AboutScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .background(if (androidx.compose.foundation.isSystemInDarkTheme()) MaterialTheme.colorScheme.background else BgAbout)
+                    .background(if (androidx.compose.foundation.isSystemInDarkTheme()) MaterialTheme.colorScheme.background else clear
+                            BgAbout)
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
